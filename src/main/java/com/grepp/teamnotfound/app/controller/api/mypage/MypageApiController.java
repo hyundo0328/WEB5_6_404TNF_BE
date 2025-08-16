@@ -8,7 +8,6 @@ import com.grepp.teamnotfound.app.controller.api.mypage.payload.UserProfileArtic
 import com.grepp.teamnotfound.app.controller.api.mypage.payload.UserProfileArticleResponse;
 import com.grepp.teamnotfound.app.controller.api.mypage.payload.VaccineWriteRequest;
 import com.grepp.teamnotfound.app.controller.api.profile.payload.ProfilePetResponse;
-import com.grepp.teamnotfound.app.model.auth.domain.Principal;
 import com.grepp.teamnotfound.app.model.board.ArticleService;
 import com.grepp.teamnotfound.app.model.board.code.ProfileBoardType;
 import com.grepp.teamnotfound.app.model.pet.PetService;

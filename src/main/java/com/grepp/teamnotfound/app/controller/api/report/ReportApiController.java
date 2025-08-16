@@ -1,7 +1,6 @@
 package com.grepp.teamnotfound.app.controller.api.report;
 
 import com.grepp.teamnotfound.app.controller.api.report.payload.ReportRequest;
-import com.grepp.teamnotfound.app.model.auth.domain.Principal;
 import com.grepp.teamnotfound.app.model.report.ReportService;
 import com.grepp.teamnotfound.app.model.report.dto.ReportCommand;
 import com.grepp.teamnotfound.app.model.user.entity.UserDetailsImpl;

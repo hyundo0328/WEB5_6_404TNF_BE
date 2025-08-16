@@ -1,7 +1,6 @@
 package com.grepp.teamnotfound.app.controller.web.pet;
 
 import com.grepp.teamnotfound.app.controller.api.mypage.payload.PetWriteRequest;
-import com.grepp.teamnotfound.app.model.auth.domain.Principal;
 import com.grepp.teamnotfound.app.model.pet.PetService;
 import com.grepp.teamnotfound.app.model.pet.dto.PetDto;
 import com.grepp.teamnotfound.app.model.user.entity.User;

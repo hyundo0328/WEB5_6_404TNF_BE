@@ -4,7 +4,6 @@ import com.grepp.teamnotfound.app.controller.api.liferecord.payload.LifeRecordLi
 import com.grepp.teamnotfound.app.controller.api.liferecord.payload.LifeRecordListResponse;
 import com.grepp.teamnotfound.app.controller.api.liferecord.payload.LifeRecordData;
 import com.grepp.teamnotfound.app.controller.api.liferecord.payload.PageInfo;
-import com.grepp.teamnotfound.app.model.auth.domain.Principal;
 import com.grepp.teamnotfound.app.model.liferecord.LifeRecordService;
 import com.grepp.teamnotfound.app.model.liferecord.dto.LifeRecordDto;
 import com.grepp.teamnotfound.app.model.liferecord.dto.LifeRecordListDto;

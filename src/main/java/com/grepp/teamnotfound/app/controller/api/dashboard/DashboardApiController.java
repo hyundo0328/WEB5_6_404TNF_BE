@@ -8,7 +8,6 @@ import com.grepp.teamnotfound.app.controller.api.dashboard.payload.SleepingRespo
 import com.grepp.teamnotfound.app.controller.api.dashboard.payload.WalkingResponse;
 import com.grepp.teamnotfound.app.controller.api.dashboard.payload.WeightResponse;
 import com.grepp.teamnotfound.app.model.ai_analysis.entity.AiAnalysis;
-import com.grepp.teamnotfound.app.model.auth.domain.Principal;
 import com.grepp.teamnotfound.app.model.dashboard.DashboardService;
 import com.grepp.teamnotfound.app.model.dashboard.dto.FeedingDashboardDto;
 import com.grepp.teamnotfound.app.model.dashboard.dto.SleepingDashboardDto;

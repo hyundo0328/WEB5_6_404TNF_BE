@@ -4,7 +4,6 @@ import com.grepp.teamnotfound.app.controller.api.reply.payload.ReplyDetailRespon
 import com.grepp.teamnotfound.app.controller.api.reply.payload.ReplyListRequest;
 import com.grepp.teamnotfound.app.controller.api.reply.payload.ReplyListResponse;
 import com.grepp.teamnotfound.app.controller.api.reply.payload.ReplyRequest;
-import com.grepp.teamnotfound.app.model.auth.domain.Principal;
 import com.grepp.teamnotfound.app.model.reply.ReplyService;
 import com.grepp.teamnotfound.app.model.user.entity.UserDetailsImpl;
 import com.grepp.teamnotfound.infra.response.ApiResponse;

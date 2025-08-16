@@ -1,6 +1,5 @@
 package com.grepp.teamnotfound.app.controller.api.notification;
 
-import com.grepp.teamnotfound.app.model.auth.domain.Principal;
 import com.grepp.teamnotfound.app.model.notification.NotificationService;
 import com.grepp.teamnotfound.app.model.notification.code.NotiTarget;
 import com.grepp.teamnotfound.app.model.notification.code.NotiType;

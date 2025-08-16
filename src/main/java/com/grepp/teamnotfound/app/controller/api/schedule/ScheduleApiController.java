@@ -2,7 +2,6 @@ package com.grepp.teamnotfound.app.controller.api.schedule;
 
 import com.grepp.teamnotfound.app.controller.api.schedule.payload.ScheduleCreateRequest;
 import com.grepp.teamnotfound.app.controller.api.schedule.payload.ScheduleEditRequest;
-import com.grepp.teamnotfound.app.model.auth.domain.Principal;
 import com.grepp.teamnotfound.app.model.schedule.ScheduleService;
 import com.grepp.teamnotfound.app.model.schedule.dto.ScheduleCreateRequestDto;
 import com.grepp.teamnotfound.app.model.schedule.dto.ScheduleDto;
