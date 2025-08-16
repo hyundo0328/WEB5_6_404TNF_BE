@@ -1,7 +1,7 @@
 package com.grepp.teamnotfound.app.model.auth;
 
-import com.grepp.teamnotfound.app.model.auth.domain.Principal;
 import com.grepp.teamnotfound.app.model.user.entity.User;
+import com.grepp.teamnotfound.app.model.user.entity.UserDetailsImpl;
 import com.grepp.teamnotfound.app.model.user.repository.UserRepository;
 import com.grepp.teamnotfound.infra.error.exception.BusinessException;
 import com.grepp.teamnotfound.infra.error.exception.code.UserErrorCode;
@@ -29,7 +29,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         User user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));
 
-        return new Principal(
+        return new UserDetailsImpl(
                 user.getUserId(),
                 user.getEmail(),
                 user.getPassword(),
