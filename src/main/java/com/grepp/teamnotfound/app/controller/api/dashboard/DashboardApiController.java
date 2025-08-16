@@ -21,6 +21,7 @@ import java.util.Map;
 
 import com.grepp.teamnotfound.app.model.recommend.GeminiService;
 import com.grepp.teamnotfound.app.model.recommend.dto.GeminiResponse;
+import com.grepp.teamnotfound.app.model.user.entity.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
@@ -53,7 +54,7 @@ public class DashboardApiController {
     public ResponseEntity<?> getDashboardProfile(
             @PathVariable Long petId,
             @RequestParam LocalDate date,
-            @AuthenticationPrincipal Principal principal
+            @AuthenticationPrincipal UserDetailsImpl principal
     ){
         PetDto petDto = dashboardService.getProfile(petId, principal.getUserId());
         ProfileResponse response = modelMapper.map(petDto, ProfileResponse.class);
@@ -82,7 +83,7 @@ public class DashboardApiController {
     public ResponseEntity<?> getDashboardFeeding(
             @PathVariable Long petId,
             @RequestParam LocalDate date,
-            @AuthenticationPrincipal Principal principal
+            @AuthenticationPrincipal UserDetailsImpl principal
     ){
         FeedingDashboardDto feedingDashboardDto = dashboardService.getFeeding(petId, principal.getUserId(), date);
         FeedingResponse response = modelMapper.map(feedingDashboardDto, FeedingResponse.class);
@@ -93,7 +94,7 @@ public class DashboardApiController {
     public ResponseEntity<?> getDashboardNote(
             @PathVariable Long petId,
             @RequestParam LocalDate date,
-            @AuthenticationPrincipal Principal principal
+            @AuthenticationPrincipal UserDetailsImpl principal
     ){
         String note = dashboardService.getNote(petId, principal.getUserId(), date);
         NoteResponse response = NoteResponse.builder().content(note).date(date).build();
@@ -105,7 +106,7 @@ public class DashboardApiController {
     public ResponseEntity<?> getDashboardWalking(
             @PathVariable Long petId,
             @RequestParam LocalDate date,
-            @AuthenticationPrincipal Principal principal
+            @AuthenticationPrincipal UserDetailsImpl principal
     ){
         WalkingDashboardDto walkingDtos = dashboardService.getWalking(petId, principal.getUserId(), date);
         WalkingResponse response = modelMapper.map(walkingDtos, WalkingResponse.class);
@@ -117,7 +118,7 @@ public class DashboardApiController {
     public ResponseEntity<?> getDashboardWeight(
             @PathVariable Long petId,
             @RequestParam LocalDate date,
-            @AuthenticationPrincipal Principal principal
+            @AuthenticationPrincipal UserDetailsImpl principal
     ){
         WeightDashboardDto weightDashboardDto = dashboardService.getWeight(petId, principal.getUserId(), date);
         WeightResponse response = modelMapper.map(weightDashboardDto, WeightResponse.class);
@@ -129,7 +130,7 @@ public class DashboardApiController {
     public ResponseEntity<?> getDashboardSleeping(
             @PathVariable Long petId,
             @RequestParam LocalDate date,
-            @AuthenticationPrincipal Principal principal
+            @AuthenticationPrincipal UserDetailsImpl principal
     ){
         SleepingDashboardDto sleepingDtos = dashboardService.getSleeping(petId, principal.getUserId(), date);
         SleepingResponse response = modelMapper.map(sleepingDtos, SleepingResponse.class);
@@ -140,7 +141,7 @@ public class DashboardApiController {
     public ResponseEntity<?> getDashboardChecklist(
         @PathVariable Long petId,
         @RequestParam LocalDate date,
-        @AuthenticationPrincipal Principal principal
+        @AuthenticationPrincipal UserDetailsImpl principal
     ){
         return ResponseEntity.ok(dashboardService.getChecklist(petId, principal.getUserId(), date));
     }

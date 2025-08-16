@@ -5,6 +5,7 @@ import com.grepp.teamnotfound.app.model.auth.domain.Principal;
 import com.grepp.teamnotfound.app.model.pet.PetService;
 import com.grepp.teamnotfound.app.model.pet.dto.PetDto;
 import com.grepp.teamnotfound.app.model.user.entity.User;
+import com.grepp.teamnotfound.app.model.user.entity.UserDetailsImpl;
 import com.grepp.teamnotfound.app.model.user.repository.UserRepository;
 import com.grepp.teamnotfound.util.CustomCollectors;
 import com.grepp.teamnotfound.util.WebUtils;
@@ -61,7 +62,7 @@ public class PetController {
         @ModelAttribute("pet") @Valid PetWriteRequest request,
         BindingResult bindingResult,
         RedirectAttributes redirectAttributes,
-        @AuthenticationPrincipal Principal principal
+        @AuthenticationPrincipal UserDetailsImpl principal
     ) {
         if (bindingResult.hasErrors()) {
             return "pet/add";
