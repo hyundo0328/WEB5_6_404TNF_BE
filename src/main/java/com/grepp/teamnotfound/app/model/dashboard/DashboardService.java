@@ -51,8 +51,8 @@ public class DashboardService {
 
     @Transactional(readOnly = true)
     public PetDto getProfile(Long petId, Long userId) {
-        Pet pet = petService.getPet(petId);
-        if(!pet.getUser().getUserId().equals(userId)) throw new UserException(UserErrorCode.USER_ACCESS_DENIED);
+        Pet pet = validatePetOwnership(petId, userId);
+        
         PetDto dto = modelMapper.map(pet, PetDto.class);
         dto.setImgUrl(petService.getProfileImgPath(petId));
         return dto;
@@ -60,8 +60,8 @@ public class DashboardService {
 
     @Transactional(readOnly = true)
     public FeedingDashboardDto getFeeding(Long petId, Long userId, LocalDate date) {
-        Pet pet = petService.getPet(petId);
-        if(!pet.getUser().getUserId().equals(userId)) throw new UserException(UserErrorCode.USER_ACCESS_DENIED);
+        Pet pet = validatePetOwnership(petId, userId);
+
         // 기록일별 생활기록id 가져오기
         Map<Long, LocalDate> lifeRecordIds = lifeRecordService.get7LifeRecordList(pet, date);
         // 기록일별 식사량 리스트 가져오기
@@ -79,7 +79,6 @@ public class DashboardService {
                 .mapToDouble(Double::doubleValue)
                 .sum();
 
-        // TODO : 식사 단위를 어떻게 해야할까요,..
         FeedUnit unit = feedingList.values().stream()
                 .flatMap(List::stream)
                 .map(Feeding::getUnit)
@@ -97,8 +96,7 @@ public class DashboardService {
 
     @Transactional(readOnly = true)
     public WalkingDashboardDto getWalking(Long petId, Long userId, LocalDate date) {
-        Pet pet = petService.getPet(petId);
-        if(!pet.getUser().getUserId().equals(userId)) throw new UserException(UserErrorCode.USER_ACCESS_DENIED);
+        Pet pet = validatePetOwnership(petId, userId);
 
         // 기록일 별로 정리
         Map<Long, LocalDate> lifeRecordIds = lifeRecordService.get9LifeRecordList(pet, date);
@@ -135,8 +133,7 @@ public class DashboardService {
 
     @Transactional(readOnly = true)
     public WeightDashboardDto getWeight(Long petId, Long userId, LocalDate date) {
-        Pet pet = petService.getPet(petId);
-        if(!pet.getUser().getUserId().equals(userId)) throw new UserException(UserErrorCode.USER_ACCESS_DENIED);
+        Pet pet = validatePetOwnership(petId, userId);
 
         List<LifeRecord> lifeRecords = lifeRecordService.getWeightLifeRecordList(pet, date);
         if (lifeRecords.isEmpty()) return new WeightDashboardDto(new ArrayList<>());
@@ -154,8 +151,7 @@ public class DashboardService {
 
     @Transactional(readOnly = true)
     public SleepingDashboardDto getSleeping(Long petId, Long userId, LocalDate date) {
-        Pet pet = petService.getPet(petId);
-        if(!pet.getUser().getUserId().equals(userId)) throw new UserException(UserErrorCode.USER_ACCESS_DENIED);
+        Pet pet = validatePetOwnership(petId, userId);
 
         List<LifeRecord> lifeRecords = lifeRecordService.getSleepingLifeRecordList(pet, date);
         if (lifeRecords.isEmpty()) return new SleepingDashboardDto(new ArrayList<>());
@@ -173,8 +169,7 @@ public class DashboardService {
 
     @Transactional(readOnly = true)
     public String getNote(Long petId, Long userId, LocalDate date) {
-        Pet pet = petService.getPet(petId);
-        if(!pet.getUser().getUserId().equals(userId)) throw new UserException(UserErrorCode.USER_ACCESS_DENIED);
+        validatePetOwnership(petId, userId);
 
         Optional<Long> lifeRecordId = lifeRecordService.findLifeRecordId(petId, date);
         if (lifeRecordId.isEmpty()) return "";
@@ -205,10 +200,7 @@ public class DashboardService {
 
     @Transactional(readOnly = true)
     public List<ScheduleDto> getChecklist(Long petId, Long userId, LocalDate date) {
-        Pet pet = petService.getPet(petId);
-        if (!pet.getUser().getUserId().equals(userId)) {
-            throw new UserException(UserErrorCode.USER_ACCESS_DENIED);
-        }
+        validatePetOwnership(petId, userId);
 
         List<Schedule> schedules = scheduleRepository.findChecklist(petId, date);
 
@@ -232,5 +224,13 @@ public class DashboardService {
         Pet pet = petService.getPet(petId);
 
         return lifeRecordService.getWeekNotes(pet, date);
+    }
+
+    private Pet validatePetOwnership(Long petId, Long userId) {
+        Pet pet = petService.getPet(petId);
+        if (!pet.getUser().getUserId().equals(userId)) {
+            throw new UserException(UserErrorCode.USER_ACCESS_DENIED);
+        }
+        return pet;
     }
 }

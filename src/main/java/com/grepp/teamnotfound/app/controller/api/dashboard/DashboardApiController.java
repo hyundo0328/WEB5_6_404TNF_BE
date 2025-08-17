@@ -17,18 +17,14 @@ import com.grepp.teamnotfound.app.model.dashboard.dto.WeightDashboardDto;
 import com.grepp.teamnotfound.app.model.pet.dto.PetDto;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 import com.grepp.teamnotfound.app.model.recommend.GeminiService;
-import com.grepp.teamnotfound.app.model.recommend.dto.GeminiResponse;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.Period;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
