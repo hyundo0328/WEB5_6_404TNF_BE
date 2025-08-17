@@ -46,13 +46,12 @@ public class DashboardService {
     private final FeedingService feedingService;
     private final LifeRecordService lifeRecordService;
     private final ScheduleRepository scheduleRepository;
-
-    ModelMapper modelMapper = new ModelMapper();
+    private final ModelMapper modelMapper;
 
     @Transactional(readOnly = true)
     public PetDto getProfile(Long petId, Long userId) {
         Pet pet = validatePetOwnership(petId, userId);
-        
+
         PetDto dto = modelMapper.map(pet, PetDto.class);
         dto.setImgUrl(petService.getProfileImgPath(petId));
         return dto;
@@ -61,11 +60,9 @@ public class DashboardService {
     @Transactional(readOnly = true)
     public FeedingDashboardDto getFeeding(Long petId, Long userId, LocalDate date) {
         Pet pet = validatePetOwnership(petId, userId);
-
-        // 기록일별 생활기록id 가져오기
-        Map<Long, LocalDate> lifeRecordIds = lifeRecordService.get7LifeRecordList(pet, date);
+        
         // 기록일별 식사량 리스트 가져오기
-        Map<LocalDate, List<Feeding>> feedingList = feedingService.getFeedingList(lifeRecordIds);
+        Map<LocalDate, List<Feeding>> feedingList = feedingService.getFeedingList(pet, date.minusDays(8), date);
         if (feedingList.isEmpty()) return FeedingDashboardDto.builder().average(0.0).build();
         Map<LocalDate, Double> dailyFeeding = calculateDailyFeeding(feedingList);
 
@@ -219,7 +216,6 @@ public class DashboardService {
             .toList();
     }
 
-    @Transactional
     public List<String> getWeekNotes(Long petId, LocalDate date) {
         Pet pet = petService.getPet(petId);
 

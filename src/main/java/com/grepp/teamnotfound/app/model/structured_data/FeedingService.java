@@ -1,6 +1,7 @@
 package com.grepp.teamnotfound.app.model.structured_data;
 
 import com.grepp.teamnotfound.app.model.liferecord.entity.LifeRecord;
+import com.grepp.teamnotfound.app.model.pet.entity.Pet;
 import com.grepp.teamnotfound.app.model.structured_data.dto.FeedingDto;
 import com.grepp.teamnotfound.app.model.structured_data.entity.Feeding;
 import com.grepp.teamnotfound.app.model.structured_data.repository.FeedingRepository;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -58,20 +60,10 @@ public class FeedingService {
     }
 
     @Transactional(readOnly = true)
-    public Map<LocalDate, List<Feeding>> getFeedingList(Map<Long, LocalDate> lifeRecordIds) {
-        List<Long> ids = new ArrayList<>(lifeRecordIds.keySet());
-        List<Feeding> feedings = feedingRepository.findAllByLifeRecord_LifeRecordIdIn(ids);
-
-        // 기록일 별로 정리
-        Map<LocalDate, List<Feeding>> result = new HashMap<>();
-        for (Feeding feeding : feedings) {
-            Long lifeRecordId = feeding.getLifeRecord().getLifeRecordId();
-            LocalDate recordedDate = lifeRecordIds.get(lifeRecordId);
-
-            result.computeIfAbsent(recordedDate, k -> new ArrayList<>()).add(feeding);
-        }
-
-        return result;
+    public Map<LocalDate, List<Feeding>> getFeedingList(Pet pet, LocalDate start, LocalDate end) {
+        return feedingRepository.findFeedingsByPetAndDateRange(pet, start, end)
+                .stream()
+                .collect(Collectors.groupingBy(f -> f.getLifeRecord().getRecordedAt()));
     }
 }
 
