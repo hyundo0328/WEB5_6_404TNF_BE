@@ -46,7 +46,7 @@ public class DashboardService {
     private final FeedingService feedingService;
     private final LifeRecordService lifeRecordService;
     private final ScheduleRepository scheduleRepository;
-    private final ModelMapper modelMapper;
+    ModelMapper modelMapper = new ModelMapper();
 
     @Transactional(readOnly = true)
     public PetDto getProfile(Long petId, Long userId) {
