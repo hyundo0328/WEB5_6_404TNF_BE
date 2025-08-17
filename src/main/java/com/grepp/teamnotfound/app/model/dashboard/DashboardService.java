@@ -60,7 +60,7 @@ public class DashboardService {
     @Transactional(readOnly = true)
     public FeedingDashboardDto getFeeding(Long petId, Long userId, LocalDate date) {
         Pet pet = validatePetOwnership(petId, userId);
-        
+
         // 기록일별 식사량 리스트 가져오기
         Map<LocalDate, List<Feeding>> feedingList = feedingService.getFeedingList(pet, date.minusDays(8), date);
         if (feedingList.isEmpty()) return FeedingDashboardDto.builder().average(0.0).build();
@@ -96,8 +96,7 @@ public class DashboardService {
         Pet pet = validatePetOwnership(petId, userId);
 
         // 기록일 별로 정리
-        Map<Long, LocalDate> lifeRecordIds = lifeRecordService.get9LifeRecordList(pet, date);
-        Map<LocalDate, List<Walking>> walkingListMap = walkingService.getWalkingList(lifeRecordIds);
+        Map<LocalDate, List<Walking>> walkingListMap = walkingService.getWalkingList(pet, date.minusDays(10), date);
 
         WalkingDashboardDto dto = new WalkingDashboardDto(new ArrayList<>());
         if (walkingListMap.isEmpty()) return dto;

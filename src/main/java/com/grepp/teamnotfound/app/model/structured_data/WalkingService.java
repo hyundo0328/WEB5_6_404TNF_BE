@@ -1,6 +1,7 @@
 package com.grepp.teamnotfound.app.model.structured_data;
 
 import com.grepp.teamnotfound.app.model.liferecord.entity.LifeRecord;
+import com.grepp.teamnotfound.app.model.pet.entity.Pet;
 import com.grepp.teamnotfound.app.model.structured_data.dto.WalkingDto;
 import com.grepp.teamnotfound.app.model.structured_data.entity.Walking;
 import com.grepp.teamnotfound.app.model.structured_data.repository.WalkingRepository;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -58,19 +60,9 @@ public class WalkingService {
     }
 
     @Transactional(readOnly = true)
-    public Map<LocalDate, List<Walking>> getWalkingList(Map<Long, LocalDate> lifeRecordIds) {
-        List<Long> ids = new ArrayList<>(lifeRecordIds.keySet());
-        List<Walking> walkings = walkingRepository.findAllByLifeRecord_LifeRecordIdIn(ids);
-
-        // 기록일 별로 정리
-        Map<LocalDate, List<Walking>> result = new HashMap<>();
-        for (Walking walking : walkings) {
-            Long lifeRecordId = walking.getLifeRecord().getLifeRecordId();
-            LocalDate recordedDate = lifeRecordIds.get(lifeRecordId);
-
-            result.computeIfAbsent(recordedDate, k -> new ArrayList<>()).add(walking);
-        }
-
-        return result;
+    public Map<LocalDate, List<Walking>> getWalkingList(Pet pet, LocalDate start, LocalDate end) {
+        return walkingRepository.findWalkingsByPetAndDateRange(pet, start, end)
+                .stream()
+                .collect(Collectors.groupingBy(w -> w.getLifeRecord().getRecordedAt()));
     }
 }
