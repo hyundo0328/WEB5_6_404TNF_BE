@@ -77,22 +77,17 @@ public class User extends BaseEntity {
         if (period.isPermanent()) {
             this.suspensionEndAt = OffsetDateTime.now().plusYears(7777);
             this.status = UserStateResponse.SUSPENDED;
-            super.updatedAt = OffsetDateTime.now();
             return;
         }
         OffsetDateTime now = OffsetDateTime.now();
-        // todo 기간이 끝난 다음 suspended > active 하는 법... 배치?
+
         if (this.status == UserStateResponse.ACTIVE) {
             this.suspensionEndAt = now.plusDays(period.getDays());
             this.status = UserStateResponse.SUSPENDED;
-            super.updatedAt = OffsetDateTime.now();
-        } else if(this.status == UserStateResponse.SUSPENDED) {
+        } else {
             this.suspensionEndAt = this.suspensionEndAt.plusDays(period.getDays());
-            super.updatedAt = OffsetDateTime.now();
-        } else {    // status == leave
-            this.suspensionEndAt = this.suspensionEndAt.plusDays(period.getDays());
-            super.updatedAt = OffsetDateTime.now();
         }
+        super.updatedAt = OffsetDateTime.now();
     }
 
     public void validateNotSelf(User reported) {
