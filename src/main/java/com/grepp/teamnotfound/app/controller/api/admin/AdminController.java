@@ -48,7 +48,7 @@ public class AdminController {
 
     @Operation(summary = "정지 회원 활성 상태로 변경하기")
     @PatchMapping("v1/users/{userId}/state")
-    public ResponseEntity<?> updateUserSuspensionEndAt(@PathVariable Long userId){
+    public ResponseEntity<?> unsuspend(@PathVariable Long userId){
         adminService.updateUserSuspensionEndAtNow(userId);
         return ResponseEntity.ok("회원을 활성 상태로 변경하였습니다.");
     }
