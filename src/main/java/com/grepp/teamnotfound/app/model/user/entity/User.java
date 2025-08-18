@@ -120,7 +120,7 @@ public class User extends BaseEntity {
         this.updatedAt = suspensionEndAt;
     }
 
-    public void validSuspension(){
+    public void refreshSuspension(){
         if(this.status == UserStatus.SUSPENDED
             && this.suspensionEndAt != null
             && OffsetDateTime.now().isAfter(this.suspensionEndAt)){

@@ -9,7 +9,6 @@ import com.grepp.teamnotfound.app.model.auth.token.dto.TokenDto;
 import com.grepp.teamnotfound.app.model.auth.token.entity.RefreshToken;
 import com.grepp.teamnotfound.app.model.auth.token.entity.TokenBlackList;
 import com.grepp.teamnotfound.app.model.auth.token.repository.TokenBlackListRepository;
-import com.grepp.teamnotfound.app.model.user.UserService;
 import com.grepp.teamnotfound.app.model.user.entity.User;
 import com.grepp.teamnotfound.app.model.user.repository.UserRepository;
 import com.grepp.teamnotfound.infra.auth.token.JwtProvider;
@@ -65,7 +64,7 @@ public class AuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         TokenDto tokenDto = processTokenLogin(((Principal) authentication.getPrincipal()).getUserId());
-        user.validSuspension();
+        user.refreshSuspension();
         user.updateLastLoginAt();
         return LoginResult.builder()
                 .userId(user.getUserId())
