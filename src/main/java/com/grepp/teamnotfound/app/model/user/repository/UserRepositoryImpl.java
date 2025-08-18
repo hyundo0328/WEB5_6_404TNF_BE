@@ -6,6 +6,7 @@ import com.grepp.teamnotfound.app.controller.api.admin.code.UsersListSortBy;
 import com.grepp.teamnotfound.app.controller.api.admin.payload.UsersListRequest;
 import com.grepp.teamnotfound.app.model.board.entity.QArticle;
 import com.grepp.teamnotfound.app.model.reply.entity.QReply;
+import com.grepp.teamnotfound.app.model.user.code.UserStateResponse;
 import com.grepp.teamnotfound.app.model.user.dto.UsersListDto;
 import com.grepp.teamnotfound.app.model.user.entity.QUser;
 import com.querydsl.core.BooleanBuilder;
@@ -15,7 +16,6 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.NumberExpression;
-import com.querydsl.core.types.dsl.StringExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -54,22 +54,20 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
             OffsetDateTime now = OffsetDateTime.now();
             switch (request.getStatus()) {
                 case ACTIVE -> search.and(
-                        user.deletedAt.isNull()
-                                .and(user.suspensionEndAt.isNull().or(user.suspensionEndAt.loe(now))));
+                        user.status.eq(UserStateResponse.ACTIVE));
                 case SUSPENDED -> search.and(
-                        user.deletedAt.isNull()
-                                .and(user.suspensionEndAt.isNotNull().and(user.suspensionEndAt.gt(now))));
+                        user.status.eq(UserStateResponse.SUSPENDED));
                 case LEAVE -> search.and(
-                        user.deletedAt.isNotNull());
+                        user.status.eq(UserStateResponse.LEAVE));
             }
         }
 
-        // status 값을 생성하기 caseBuilder
-        // 없어서.. case-when 으로 제작
-        StringExpression statusExpression = new CaseBuilder()
-                .when(user.deletedAt.isNotNull()).then("LEAVE")
-                .when(user.suspensionEndAt.isNotNull().and(user.suspensionEndAt.gt(OffsetDateTime.now()))).then("SUSPENDED")
-                .otherwise("ACTIVE");
+//        // status 값을 생성하기 caseBuilder
+//        // 없어서.. case-when 으로 제작
+//        StringExpression statusExpression = new CaseBuilder()
+//                .when(user.deletedAt.isNotNull()).then("LEAVE")
+//                .when(user.suspensionEndAt.isNotNull().and(user.suspensionEndAt.gt(OffsetDateTime.now()))).then("SUSPENDED")
+//                .otherwise("ACTIVE");
 
         // 메인 쿼리
         List<UsersListDto> content = queryFactory
@@ -95,7 +93,8 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
                         ),
                         user.lastLoginAt.as("lastLoginDate"),
                         user.createdAt.as("joinDate"),
-                        ExpressionUtils.as(statusExpression, "status"),
+                        user.status.as("status"),
+//                        ExpressionUtils.as(statusExpression, "status"),
                         user.suspensionEndAt
                 ))
                 .from(user)
@@ -151,8 +150,8 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
             case SUSPENSION_END_DATE -> direction.isAsc() ? user.suspensionEndAt.asc().nullsLast() : user.suspensionEndAt.desc().nullsLast();
             case STATE -> {
                 NumberExpression<Integer> stateOrder = new CaseBuilder()
-                        .when(user.deletedAt.isNotNull()).then(3)            // LEAVE
-                        .when(user.suspensionEndAt.gt(OffsetDateTime.now())).then(2) // SUSPENDED
+                        .when(user.status.eq(UserStateResponse.LEAVE)).then(3)            // LEAVE
+                        .when(user.status.eq(UserStateResponse.SUSPENDED)).then(2) // SUSPENDED
                         .otherwise(1);                                       // ACTIVE or ALL
                 yield direction.isAsc() ? stateOrder.asc() : stateOrder.desc();
             }
