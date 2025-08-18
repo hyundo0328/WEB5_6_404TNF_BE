@@ -17,7 +17,7 @@ import java.time.OffsetDateTime;
 @Entity
 @Table(name = "Users")
 @Getter
-//@Setter
+@EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
@@ -120,7 +120,7 @@ public class User extends BaseEntity {
         this.updatedAt = suspensionEndAt;
     }
 
-    public void refreshSuspension(){
+    public void refreshStatus(){
         if(this.status == UserStatus.SUSPENDED
             && this.suspensionEndAt != null
             && OffsetDateTime.now().isAfter(this.suspensionEndAt)){
