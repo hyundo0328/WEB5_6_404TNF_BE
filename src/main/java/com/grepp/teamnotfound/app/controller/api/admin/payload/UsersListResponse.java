@@ -51,7 +51,7 @@ public class UsersListResponse {
                     .commentCount(dto.getCommentCount())
                     .lastLoginDate(toKST(dto.getLastLoginDate()))
                     .joinDate(toKST(dto.getJoinDate()))
-                    .status(dto.getStatus())
+                    .status(dto.getStatus().name())
                     .suspensionEndAt(toKST(dto.getSuspensionEndAt()))
                     .build();
         }

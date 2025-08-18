@@ -24,7 +24,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 
 @Repository
@@ -51,7 +50,6 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
 
         // 필터링 조건 : active, suspended, leave search.and
         if (request.getStatus() != null && request.getStatus() != UserStateFilter.ALL) {
-            OffsetDateTime now = OffsetDateTime.now();
             switch (request.getStatus()) {
                 case ACTIVE -> search.and(
                         user.status.eq(UserStateResponse.ACTIVE));
@@ -61,13 +59,6 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
                         user.status.eq(UserStateResponse.LEAVE));
             }
         }
-
-//        // status 값을 생성하기 caseBuilder
-//        // 없어서.. case-when 으로 제작
-//        StringExpression statusExpression = new CaseBuilder()
-//                .when(user.deletedAt.isNotNull()).then("LEAVE")
-//                .when(user.suspensionEndAt.isNotNull().and(user.suspensionEndAt.gt(OffsetDateTime.now()))).then("SUSPENDED")
-//                .otherwise("ACTIVE");
 
         // 메인 쿼리
         List<UsersListDto> content = queryFactory
@@ -93,8 +84,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
                         ),
                         user.lastLoginAt.as("lastLoginDate"),
                         user.createdAt.as("joinDate"),
-                        user.status.as("status"),
-//                        ExpressionUtils.as(statusExpression, "status"),
+                        user.status,
                         user.suspensionEndAt
                 ))
                 .from(user)
