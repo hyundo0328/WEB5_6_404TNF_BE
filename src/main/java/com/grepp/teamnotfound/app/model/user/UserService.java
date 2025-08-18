@@ -111,11 +111,6 @@ public class UserService {
         });
     }
 
-    @Transactional(readOnly = true)
-    public Optional<User> findByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
-
     @Transactional
     public UserDto updateUser(Long userId, UserWriteRequest request, List<MultipartFile> images) {
         User user = userRepository.findByUserId(userId)
