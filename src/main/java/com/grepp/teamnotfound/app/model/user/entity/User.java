@@ -118,6 +118,11 @@ public class User extends BaseEntity {
         return this.deletedAt != null;
     }
 
+    public void deleteUser(){
+        this.status = UserStateResponse.LEAVE;
+        this.deletedAt = OffsetDateTime.now();
+    }
+
     public void updateSuspensionEndAtNow() {
         OffsetDateTime now = OffsetDateTime.now();
 

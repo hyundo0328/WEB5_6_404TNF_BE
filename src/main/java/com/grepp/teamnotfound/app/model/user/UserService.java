@@ -158,7 +158,8 @@ public class UserService {
         User user = userRepository.findByUserId(userId)
             .orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));
 
-        user.setDeletedAt(OffsetDateTime.now());
+//        user.setDeletedAt(OffsetDateTime.now());
+        user.deleteUser();
         userRepository.save(user);
 
         userImgRepository.softDeleteUserImg(user.getUserId());
