@@ -68,18 +68,28 @@ public class User extends BaseEntity {
     @Column
     private OffsetDateTime lastLoginAt;
 
+    @Column(nullable = false, length = 30)
+    @Enumerated(EnumType.STRING)
+    private UserStateResponse status;
+
 
     public void suspend(SuspensionPeriod period) {
         if (period.isPermanent()) {
             this.suspensionEndAt = OffsetDateTime.now().plusYears(7777);
+            this.status = UserStateResponse.SUSPENDED;
             super.updatedAt = OffsetDateTime.now();
             return;
         }
         OffsetDateTime now = OffsetDateTime.now();
-        if (this.suspensionEndAt == null || this.suspensionEndAt.isBefore(now)) {
+        // todo 기간이 끝난 다음 suspended > active 하는 법... 배치?
+        if (this.status == UserStateResponse.ACTIVE) {
             this.suspensionEndAt = now.plusDays(period.getDays());
+            this.status = UserStateResponse.SUSPENDED;
             super.updatedAt = OffsetDateTime.now();
-        } else {
+        } else if(this.status == UserStateResponse.SUSPENDED) {
+            this.suspensionEndAt = this.suspensionEndAt.plusDays(period.getDays());
+            super.updatedAt = OffsetDateTime.now();
+        } else {    // status == leave
             this.suspensionEndAt = this.suspensionEndAt.plusDays(period.getDays());
             super.updatedAt = OffsetDateTime.now();
         }

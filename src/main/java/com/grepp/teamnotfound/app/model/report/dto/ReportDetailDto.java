@@ -45,7 +45,7 @@ public class ReportDetailDto {
                 .reporterNickname(report.getReporter().getNickname())
                 .reportedNickname(report.getReported().getNickname())
                 .adminReason(report.getAdminReason())
-                .reportedState(report.getReported().getUserState())
+                .reportedState(report.getReported().getStatus())
                 .createdAt(report.getCreatedAt())
                 .reportedAt(report.getReportedAt())
                 .suspensionEndAt(report.getReported().getSuspensionEndAt())
