@@ -41,6 +41,8 @@ public class ReportService {
                 : articleRepository.findWithBoardByArticleId(report.getContentId())
                 .orElseThrow(() -> new BusinessException(BoardErrorCode.ARTICLE_NOT_FOUND));
 
+        report.getReported().validSuspension();
+
         return ReportDetailDto.from(report, article);
     }
 

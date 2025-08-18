@@ -41,7 +41,7 @@ public class AdminController {
     @GetMapping("v1/users")
     public ResponseEntity<UsersListResponse> getUsers(
             @Valid @ModelAttribute UsersListRequest request){
-        Page<UsersListDto> userPage = adminService.getUsersList(request);
+        Page<UsersListDto> userPage = adminService.refreshUsersStatusAndGetUsersList(request);
         UsersListResponse response = UsersListResponse.of(userPage);
         return ResponseEntity.ok(response);
     }

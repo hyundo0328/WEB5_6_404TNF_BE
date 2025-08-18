@@ -228,11 +228,14 @@ public class AdminService {
         } else throw new BusinessException(ReportErrorCode.REPORT_TYPE_BAD_REQUEST);
     }
 
-    public Page<UsersListDto> getUsersList(UsersListRequest request) {
+    @Transactional
+    public Page<UsersListDto> refreshUsersStatusAndGetUsersList(UsersListRequest request) {
+        userRepository.refreshSuspendedUsers();
         Pageable pageable = PageRequest.of(request.getPage() -1, request.getSize());
         return userRepository.findUserListWithMeta(request, pageable);
     }
 
+    @Transactional(readOnly = true)
     public Page<ReportsListDto> getReportsList(ReportsListRequest request) {
         Pageable pageable = PageRequest.of(request.getPage() -1, request.getSize());
         return reportRepository.findReportListWithMeta(request, pageable);

@@ -24,6 +24,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Repository
@@ -146,6 +147,17 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
                 yield direction.isAsc() ? stateOrder.asc() : stateOrder.desc();
             }
         };
+    }
+
+
+    // 전체 회원 목록 조회 전, suspend 종료된 회원 status update
+    @Override
+    public void refreshSuspendedUsers() {
+        queryFactory.update(QUser.user)
+                .set(QUser.user.status, UserStateResponse.ACTIVE)
+                .where(QUser.user.status.eq(UserStateResponse.SUSPENDED)
+                        .and(QUser.user.suspensionEndAt.before(OffsetDateTime.now())))
+                .execute();
     }
 }
 
