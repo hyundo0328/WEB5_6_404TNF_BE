@@ -2,7 +2,7 @@ package com.grepp.teamnotfound.app.model.user.entity;
 
 import com.grepp.teamnotfound.app.model.auth.code.Role;
 import com.grepp.teamnotfound.app.model.user.code.SuspensionPeriod;
-import com.grepp.teamnotfound.app.model.user.code.UserStateResponse;
+import com.grepp.teamnotfound.app.model.user.code.UserStatus;
 import com.grepp.teamnotfound.infra.entity.BaseEntity;
 import com.grepp.teamnotfound.infra.error.exception.BusinessException;
 import com.grepp.teamnotfound.infra.error.exception.code.ReportErrorCode;
@@ -70,20 +70,20 @@ public class User extends BaseEntity {
 
     @Column(nullable = false, length = 30)
     @Enumerated(EnumType.STRING)
-    private UserStateResponse status;
+    private UserStatus status;
 
 
     public void suspend(SuspensionPeriod period) {
         if (period.isPermanent()) {
             this.suspensionEndAt = OffsetDateTime.now().plusYears(7777);
-            this.status = UserStateResponse.SUSPENDED;
+            this.status = UserStatus.SUSPENDED;
             return;
         }
         OffsetDateTime now = OffsetDateTime.now();
 
-        if (this.status == UserStateResponse.ACTIVE) {
+        if (this.status == UserStatus.ACTIVE) {
             this.suspensionEndAt = now.plusDays(period.getDays());
-            this.status = UserStateResponse.SUSPENDED;
+            this.status = UserStatus.SUSPENDED;
         } else {
             this.suspensionEndAt = this.suspensionEndAt.plusDays(period.getDays());
         }
@@ -105,7 +105,7 @@ public class User extends BaseEntity {
     }
 
     public void deleteUser(){
-        this.status = UserStateResponse.LEAVE;
+        this.status = UserStatus.LEAVE;
         this.deletedAt = OffsetDateTime.now();
     }
 
@@ -121,10 +121,10 @@ public class User extends BaseEntity {
     }
 
     public void validSuspension(){
-        if(this.status == UserStateResponse.SUSPENDED
+        if(this.status == UserStatus.SUSPENDED
             && this.suspensionEndAt != null
             && OffsetDateTime.now().isAfter(this.suspensionEndAt)){
-            this.status = UserStateResponse.ACTIVE;
+            this.status = UserStatus.ACTIVE;
         }
     }
 }

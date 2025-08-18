@@ -6,7 +6,7 @@ import com.grepp.teamnotfound.app.controller.api.admin.code.UsersListSortBy;
 import com.grepp.teamnotfound.app.controller.api.admin.payload.UsersListRequest;
 import com.grepp.teamnotfound.app.model.board.entity.QArticle;
 import com.grepp.teamnotfound.app.model.reply.entity.QReply;
-import com.grepp.teamnotfound.app.model.user.code.UserStateResponse;
+import com.grepp.teamnotfound.app.model.user.code.UserStatus;
 import com.grepp.teamnotfound.app.model.user.dto.UsersListDto;
 import com.grepp.teamnotfound.app.model.user.entity.QUser;
 import com.querydsl.core.BooleanBuilder;
@@ -53,11 +53,11 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
         if (request.getStatus() != null && request.getStatus() != UserStateFilter.ALL) {
             switch (request.getStatus()) {
                 case ACTIVE -> search.and(
-                        user.status.eq(UserStateResponse.ACTIVE));
+                        user.status.eq(UserStatus.ACTIVE));
                 case SUSPENDED -> search.and(
-                        user.status.eq(UserStateResponse.SUSPENDED));
+                        user.status.eq(UserStatus.SUSPENDED));
                 case LEAVE -> search.and(
-                        user.status.eq(UserStateResponse.LEAVE));
+                        user.status.eq(UserStatus.LEAVE));
             }
         }
 
@@ -141,8 +141,8 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
             case SUSPENSION_END_DATE -> direction.isAsc() ? user.suspensionEndAt.asc().nullsLast() : user.suspensionEndAt.desc().nullsLast();
             case STATE -> {
                 NumberExpression<Integer> stateOrder = new CaseBuilder()
-                        .when(user.status.eq(UserStateResponse.LEAVE)).then(3)            // LEAVE
-                        .when(user.status.eq(UserStateResponse.SUSPENDED)).then(2) // SUSPENDED
+                        .when(user.status.eq(UserStatus.LEAVE)).then(3)            // LEAVE
+                        .when(user.status.eq(UserStatus.SUSPENDED)).then(2) // SUSPENDED
                         .otherwise(1);                                       // ACTIVE or ALL
                 yield direction.isAsc() ? stateOrder.asc() : stateOrder.desc();
             }
@@ -154,8 +154,8 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
     @Override
     public void refreshSuspendedUsers() {
         queryFactory.update(QUser.user)
-                .set(QUser.user.status, UserStateResponse.ACTIVE)
-                .where(QUser.user.status.eq(UserStateResponse.SUSPENDED)
+                .set(QUser.user.status, UserStatus.ACTIVE)
+                .where(QUser.user.status.eq(UserStatus.SUSPENDED)
                         .and(QUser.user.suspensionEndAt.before(OffsetDateTime.now())))
                 .execute();
     }
