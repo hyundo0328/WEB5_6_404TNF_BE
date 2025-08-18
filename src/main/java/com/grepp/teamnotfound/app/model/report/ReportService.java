@@ -76,21 +76,6 @@ public class ReportService {
         }
     }
 
-    private User findReportedUser(ReportType reportType, Long contentId) {
-        if (reportType == ReportType.BOARD) {
-            // 게시글 존재 확인 및 작성자 갖고 오기
-            Article article = articleRepository.findByIdFetchUser(contentId)
-                    .orElseThrow(() -> new BusinessException(BoardErrorCode.ARTICLE_NOT_FOUND));
-            return article.getUser();
-
-        } else if (reportType == ReportType.REPLY) {
-            Reply reply = replyRepository.findByIdFetchUser(contentId)
-                    .orElseThrow(() -> new BusinessException(ReplyErrorCode.REPLY_NOT_FOUND));
-            return reply.getUser();
-
-        } else throw new BusinessException(ReportErrorCode.REPORT_TYPE_BAD_REQUEST);
-    }
-
     private User validateReporter(Long reporterId) {
         return userRepository.findByUserId(reporterId)
                 .orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));

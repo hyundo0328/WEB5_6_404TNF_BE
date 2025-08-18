@@ -95,15 +95,6 @@ public class User extends BaseEntity {
         }
     }
 
-    public UserStateResponse getUserState() {
-        if (this.deletedAt != null) {
-            return UserStateResponse.LEAVE;
-        } else if(this.suspensionEndAt == null || this.suspensionEndAt.isBefore(OffsetDateTime.now())){
-            return UserStateResponse.ACTIVE;
-        } else
-            return UserStateResponse.SUSPENDED;
-        }
-
     public void validateNotSelf(User reported) {
         if(this.equals(reported)){
             throw new BusinessException(ReportErrorCode.CANNOT_REPORT_SELF);
