@@ -111,13 +111,16 @@ tasks.named('test') {
 flyway {
     driver="org.postgresql.Driver"
     locations = ['classpath:db/migration']
+    cleanDisabled = false
+    baselineOnMigrate = true
+    baselineVersion = '1'
 
     def profile = project.hasProperty('dbProfile') ? project.dbProfile : 'local'
 
     if (profile.equals('prod')) {
         url = 'jdbc:postgresql://aws-0-ap-northeast-2.pooler.supabase.com:5432/postgres'
         user = 'postgres.tqfrfajjuuqiwltoapoz'
-        password = System.getProperty('POSTGRESQL_SECRET')
+        password = System.getenv('POSTGRESQL_SECRET')
     } else {
         url = 'jdbc:postgresql://localhost:5432/testdb'
         user = 'localmaster'
