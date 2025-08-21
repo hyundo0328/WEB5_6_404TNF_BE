@@ -3,6 +3,7 @@ plugins {
     id 'org.springframework.boot' version '3.4.7'
     id 'io.spring.dependency-management' version '1.1.7'
 //    id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
+    id 'org.flywaydb.flyway' version '9.0.0'
 }
 
 group = 'com.grepp'
@@ -35,8 +36,10 @@ dependencyManagement {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-mail")
 
-    runtimeOnly 'com.mysql:mysql-connector-j'
-    implementation 'org.postgresql:postgresql:42.7.7'
+//    runtimeOnly 'com.mysql:mysql-connector-j'
+    implementation 'org.postgresql:postgresql:42.7.3'
+    implementation'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-database-postgresql:10.13.0'
 
     implementation 'org.springframework.boot:spring-boot-starter'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -103,4 +106,21 @@ sourceSets {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+flyway {
+    driver="org.postgresql.Driver"
+    locations = ['classpath:db/migration']
+
+    def profile = project.hasProperty('dbProfile') ? project.dbProfile : 'local'
+
+    if (profile.equals('prod')) {
+        url = 'jdbc:postgresql://aws-0-ap-northeast-2.pooler.supabase.com:5432/postgres'
+        user = 'postgres.tqfrfajjuuqiwltoapoz'
+        password = System.getProperty('POSTGRESQL_SECRET')
+    } else {
+        url = 'jdbc:postgresql://localhost:5432/testdb'
+        user = 'localmaster'
+        password = '123qwe!@#'
+    }
 }
