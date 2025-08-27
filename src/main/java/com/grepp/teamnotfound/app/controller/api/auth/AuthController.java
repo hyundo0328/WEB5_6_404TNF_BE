@@ -55,7 +55,7 @@ public class AuthController {
     @Operation(summary = "이메일 인증코드 발송 요청")
     @PostMapping("v1/email-verifications")
     public ResponseEntity<?> emailVerification(@RequestBody EmailVerificationRequest request) {
-        userService.sendEmail(request.getEmail());
+        mailService.sendVerificationEmail(request.getEmail());
         return ResponseEntity.ok("인증 코드가 발송되었습니다.");
     }
 

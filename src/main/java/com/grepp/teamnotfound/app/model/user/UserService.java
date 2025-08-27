@@ -91,10 +91,6 @@ public class UserService {
         return user.getUserId();
     }
 
-    public void sendEmail(String email) {
-        mailService.sendVerificationEmail(email);
-    }
-
     @Transactional(readOnly = true)
     public void validateEmailDuplication(String email) {
         userRepository.findByEmail(email).ifPresent(user -> {
@@ -107,11 +103,6 @@ public class UserService {
         userRepository.findByNickname(nickname).ifPresent(user -> {
             throw new BusinessException(UserErrorCode.USER_NICKNAME_ALREADY_EXISTS);
         });
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<User> findByEmail(String email) {
-        return userRepository.findByEmail(email);
     }
 
     @Transactional
