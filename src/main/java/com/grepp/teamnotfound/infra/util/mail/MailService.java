@@ -1,20 +1,22 @@
 package com.grepp.teamnotfound.infra.util.mail;
 
 import com.grepp.teamnotfound.infra.error.exception.AuthException;
-import com.grepp.teamnotfound.infra.error.exception.CommonException;
 import com.grepp.teamnotfound.infra.error.exception.code.UserErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MailService {
 
     private final JavaMailSender mailSender;
@@ -27,6 +29,7 @@ public class MailService {
     private long expirationSeconds;
 
 
+    @Async("mailExecutor")
     public void sendVerificationEmail(String toEmail){
         String verifyCode = VerifyCodeGenerator.generateCode();
         String subject = "[🐶멍멍일지] 회원가입 인증 코드입니다.";
@@ -47,8 +50,8 @@ public class MailService {
             mailSender.send(message);
 
         } catch (MailException e) {
+            log.error("Failed to send verification email to {}. Reason: {}", toEmail, e.getMessage(), e);
             stringRedisTemplate.delete("email: verifying " + toEmail);
-            throw new CommonException(UserErrorCode.EMAIL_VERIFICATION_SEND_FAILED);
         }
     }
 
