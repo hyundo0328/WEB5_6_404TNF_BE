@@ -48,7 +48,6 @@ public class MailService {
 
         } catch (MailException e) {
             stringRedisTemplate.delete("email: verifying " + toEmail);
-            // MailException은 복구 안 되는 오류니, 그냥 Runtime으로 둠
             throw new CommonException(UserErrorCode.EMAIL_VERIFICATION_SEND_FAILED);
         }
     }
@@ -58,7 +57,6 @@ public class MailService {
         String redisKey = "email: verifying " + email;
         String storedCode = stringRedisTemplate.opsForValue().get(redisKey);
         if (storedCode == null || !storedCode.equals(code)) {
-            // 유저의 입력 오류에 따른 예외니, 그냥 Runtime으로 둠
             throw new AuthException(UserErrorCode.EMAIL_VERIFICATION_FAILED);
         }
         stringRedisTemplate.delete(redisKey);
