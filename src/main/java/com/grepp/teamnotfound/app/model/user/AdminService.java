@@ -186,7 +186,7 @@ public class AdminService {
         Report targetReport = reportRepository.findByReportIdWithUsers(dto.getReportId())
                 .orElseThrow(() -> new BusinessException(ReportErrorCode.REPORT_NOT_FOUND));
 
-        insertReportedAtOfContent(targetReport);
+        hideContentBy(targetReport);
         targetReport.accept(dto.getAdminReason());
 
         NotiServiceCreateDto notiDto1 = NotiServiceCreateDto.builder()
@@ -215,7 +215,7 @@ public class AdminService {
         user.suspend(dto.getPeriod());
     }
 
-    private void insertReportedAtOfContent(Report targetReport) {
+    private void hideContentBy(Report targetReport) {
         if(targetReport.getType() == ReportType.BOARD){
             Article article = articleRepository.findByArticleId(targetReport.getContentId())
                     .orElseThrow(() -> new BusinessException(BoardErrorCode.ARTICLE_NOT_FOUND));
