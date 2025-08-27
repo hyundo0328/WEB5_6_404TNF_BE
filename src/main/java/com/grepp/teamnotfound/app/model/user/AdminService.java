@@ -158,13 +158,6 @@ public class AdminService {
         Report targetReport = reportRepository.findByReportIdWithUsers(dto.getReportId())
                 .orElseThrow(() -> new BusinessException(ReportErrorCode.REPORT_NOT_FOUND));
 
-        targetReport.reject(dto.getAdminReason());
-
-        NotiServiceCreateDto notiDto1 = NotiServiceCreateDto.builder()
-            .targetId(targetReport.getReportId())
-            .build();
-        notiAppender.append(targetReport.getReporter().getUserId(), NotiType.REPORT_FAIL, notiDto1);
-
         List<Report> reports = reportRepository.findByContentIdAndReportCategoryAndReportTypeState(
                 targetReport.getContentId(),
                 targetReport.getCategory(),
@@ -187,13 +180,6 @@ public class AdminService {
                 .orElseThrow(() -> new BusinessException(ReportErrorCode.REPORT_NOT_FOUND));
 
         hideContentBy(targetReport);
-        targetReport.accept(dto.getAdminReason());
-
-        NotiServiceCreateDto notiDto1 = NotiServiceCreateDto.builder()
-            .targetId(targetReport.getReportId())
-            .build();
-        notiAppender.append(targetReport.getReporter().getUserId(), NotiType.REPORT_SUCCESS, notiDto1);
-        notiAppender.append(targetReport.getReported().getUserId(), NotiType.REPORTED, notiDto1);
 
         List<Report> reports = reportRepository.findByContentIdAndReportCategoryAndReportTypeState(
                 targetReport.getContentId(),
