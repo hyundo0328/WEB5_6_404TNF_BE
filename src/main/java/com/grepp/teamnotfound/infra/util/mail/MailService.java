@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.mail.MailException;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
@@ -49,7 +50,7 @@ public class MailService {
             message.setText(text);
             mailSender.send(message);
 
-        } catch (MailException e) {
+        } catch (MailSendException e) {
             log.error("Failed to send verification email to {}. Reason: {}", toEmail, e.getMessage(), e);
             stringRedisTemplate.delete("email: verifying " + toEmail);
         }
