@@ -7,6 +7,7 @@ import com.grepp.teamnotfound.app.model.board.dto.YearlyArticlesStatsDto;
 import com.grepp.teamnotfound.app.model.report.ReportService;
 import com.grepp.teamnotfound.app.model.report.dto.ReportDetailDto;
 import com.grepp.teamnotfound.app.model.report.dto.ReportsListDto;
+import com.grepp.teamnotfound.app.model.report.entity.Report;
 import com.grepp.teamnotfound.app.model.user.AdminService;
 import com.grepp.teamnotfound.app.model.user.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -121,7 +122,8 @@ public class AdminController {
     @PatchMapping("v1/reports/result-accept")
     public ResponseEntity<?> acceptReport(@RequestBody AcceptReportRequest request){
         AcceptReportDto dto = AcceptReportDto.of(request);
-        adminService.acceptReportAndSuspendUser(dto);
+        List<Report> reports = adminService.acceptReportAndSuspendUser(dto);
+        adminService.notiAccept(reports);
         return ResponseEntity.ok("신고가 정상적으로 처리되었습니다.");
     }
 
@@ -129,7 +131,8 @@ public class AdminController {
     @PatchMapping("v1/reports/result-reject")
     public ResponseEntity<?> rejectReport(@RequestBody RejectReportRequest request){
         RejectReportDto dto = RejectReportDto.of(request);
-        adminService.rejectReport(dto);
+        List<Report> reports = adminService.rejectReport(dto);
+        adminService.notiReject(reports);
         return ResponseEntity.ok("신고를 성공적으로 거절하였습니다.");
     }
 

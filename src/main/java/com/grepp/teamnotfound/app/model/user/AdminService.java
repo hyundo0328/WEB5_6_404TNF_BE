@@ -154,7 +154,7 @@ public class AdminService {
     }
 
     @Transactional
-    public void rejectReport(RejectReportDto dto) {
+    public List<Report> rejectReport(RejectReportDto dto) {
         Report targetReport = reportRepository.findByReportIdWithUsers(dto.getReportId())
                 .orElseThrow(() -> new BusinessException(ReportErrorCode.REPORT_NOT_FOUND));
 
@@ -166,7 +166,12 @@ public class AdminService {
         );
         for (Report report : reports) {
             report.reject(dto.getAdminReason());
+        }
+        return reports;
+    }
 
+    public void notiReject(List<Report> reports){
+        for (Report report : reports) {
             NotiServiceCreateDto notiDtos = NotiServiceCreateDto.builder()
                 .targetId(report.getReportId())
                 .build();
@@ -175,7 +180,7 @@ public class AdminService {
     }
 
     @Transactional
-    public void acceptReportAndSuspendUser(AcceptReportDto dto) {
+    public List<Report> acceptReportAndSuspendUser(AcceptReportDto dto) {
         Report targetReport = reportRepository.findByReportIdWithUsers(dto.getReportId())
                 .orElseThrow(() -> new BusinessException(ReportErrorCode.REPORT_NOT_FOUND));
 
@@ -189,16 +194,22 @@ public class AdminService {
         );
         for (Report report : reports) {
             report.accept(dto.getAdminReason());
-
-            NotiServiceCreateDto notiDtos = NotiServiceCreateDto.builder()
-                .targetId(report.getReportId())
-                .build();
-            notiAppender.append(report.getReporter().getUserId(), NotiType.REPORT_SUCCESS, notiDtos);
-            notiAppender.append(report.getReported().getUserId(), NotiType.REPORTED, notiDtos);
         }
 
         User user = targetReport.getReported();
         user.suspend(dto.getPeriod());
+
+        return reports;
+    }
+
+    public void notiAccept(List<Report> reports) {
+        for(Report report : reports) {
+            NotiServiceCreateDto notiDtos = NotiServiceCreateDto.builder()
+                    .targetId(report.getReportId())
+                    .build();
+            notiAppender.append(report.getReporter().getUserId(), NotiType.REPORT_SUCCESS, notiDtos);
+            notiAppender.append(report.getReported().getUserId(), NotiType.REPORTED, notiDtos);
+        }
     }
 
     private void hideContentBy(Report targetReport) {
