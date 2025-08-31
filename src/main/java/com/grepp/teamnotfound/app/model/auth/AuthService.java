@@ -64,6 +64,8 @@ public class AuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         TokenDto tokenDto = processTokenLogin(((UserDetailsImpl) authentication.getPrincipal()).getUserId());
+        user.refreshStatus();
+      
         user.updateLastLoginAt();
         return LoginResult.builder()
                 .userId(user.getUserId())

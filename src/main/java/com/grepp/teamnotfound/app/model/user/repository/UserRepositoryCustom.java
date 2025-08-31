@@ -7,4 +7,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface UserRepositoryCustom {
     Page<UsersListDto> findUserListWithMeta(UsersListRequest request, Pageable pageable);
+    void refreshSuspendedUsers();
 }

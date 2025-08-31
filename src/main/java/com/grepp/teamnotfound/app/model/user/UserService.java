@@ -3,6 +3,7 @@ package com.grepp.teamnotfound.app.model.user;
 import com.grepp.teamnotfound.app.controller.api.mypage.payload.PasswordRequestDto;
 import com.grepp.teamnotfound.app.controller.api.mypage.payload.UserWriteRequest;
 import com.grepp.teamnotfound.app.model.auth.code.Role;
+import com.grepp.teamnotfound.app.model.user.code.UserStatus;
 import com.grepp.teamnotfound.app.model.user.dto.RegisterCommand;
 import com.grepp.teamnotfound.app.model.user.dto.UserDto;
 import com.grepp.teamnotfound.app.model.user.entity.User;
@@ -85,6 +86,7 @@ public class UserService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.ROLE_USER)
                 .provider("local")
+                .status(UserStatus.ACTIVE)
                 .build();
 
         userRepository.save(user);
@@ -107,11 +109,6 @@ public class UserService {
         userRepository.findByNickname(nickname).ifPresent(user -> {
             throw new BusinessException(UserErrorCode.USER_NICKNAME_ALREADY_EXISTS);
         });
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<User> findByEmail(String email) {
-        return userRepository.findByEmail(email);
     }
 
     @Transactional
@@ -156,7 +153,8 @@ public class UserService {
         User user = userRepository.findByUserId(userId)
             .orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));
 
-        user.setDeletedAt(OffsetDateTime.now());
+//        user.setDeletedAt(OffsetDateTime.now());
+        user.deleteUser();
         userRepository.save(user);
 
         userImgRepository.softDeleteUserImg(user.getUserId());

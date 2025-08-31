@@ -41,6 +41,8 @@ public class ReportService {
                 : articleRepository.findWithBoardByArticleId(report.getContentId())
                 .orElseThrow(() -> new BusinessException(BoardErrorCode.ARTICLE_NOT_FOUND));
 
+        report.getReported().refreshStatus();
+
         return ReportDetailDto.from(report, article);
     }
 
@@ -74,21 +76,6 @@ public class ReportService {
         if (reportRepository.duplicateReport(reporter, command.getReportType(), command.getContentId())) {
             throw new BusinessException(ReportErrorCode.DUPLICATED_REPORT);
         }
-    }
-
-    private User findReportedUser(ReportType reportType, Long contentId) {
-        if (reportType == ReportType.BOARD) {
-            // 게시글 존재 확인 및 작성자 갖고 오기
-            Article article = articleRepository.findByIdFetchUser(contentId)
-                    .orElseThrow(() -> new BusinessException(BoardErrorCode.ARTICLE_NOT_FOUND));
-            return article.getUser();
-
-        } else if (reportType == ReportType.REPLY) {
-            Reply reply = replyRepository.findByIdFetchUser(contentId)
-                    .orElseThrow(() -> new BusinessException(ReplyErrorCode.REPLY_NOT_FOUND));
-            return reply.getUser();
-
-        } else throw new BusinessException(ReportErrorCode.REPORT_TYPE_BAD_REQUEST);
     }
 
     private User validateReporter(Long reporterId) {

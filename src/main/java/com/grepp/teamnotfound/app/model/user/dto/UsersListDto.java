@@ -1,5 +1,6 @@
 package com.grepp.teamnotfound.app.model.user.dto;
 
+import com.grepp.teamnotfound.app.model.user.code.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +21,7 @@ public class UsersListDto {
     private Long commentCount;
     private OffsetDateTime lastLoginDate;
     private OffsetDateTime joinDate;
-    private String status;
+    private UserStatus status;
     private OffsetDateTime suspensionEndAt;
 
 }
