@@ -1,7 +1,6 @@
 package com.grepp.teamnotfound.app.model.report.dto;
 
 import com.grepp.teamnotfound.app.controller.api.report.payload.ReportRequest;
-import com.grepp.teamnotfound.app.model.auth.domain.Principal;
 import com.grepp.teamnotfound.app.model.report.code.ReportCategory;
 import com.grepp.teamnotfound.app.model.report.code.ReportType;
 import lombok.Builder;
@@ -17,9 +16,9 @@ public class ReportCommand {
     private ReportCategory reportCategory;
     private String reason;
 
-    public static ReportCommand of(Principal principal, ReportRequest request) {
+    public static ReportCommand of(Long userId, ReportRequest request) {
         return ReportCommand.builder()
-                .reporterId(principal.getUserId())
+                .reporterId(userId)
                 .reportType(request.getReportType())
                 .contentId(request.getContentId())
                 .reportCategory(request.getReportCategory())

@@ -1,6 +1,5 @@
 package com.grepp.teamnotfound.app.model.user.entity;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,12 +9,13 @@ import java.util.Collection;
 import java.util.List;
 
 @RequiredArgsConstructor
-@Builder
 public class UserDetailsImpl implements UserDetails {
 
     @Getter
-    private final User user;
-    private final List<GrantedAuthority> authorities;
+    private final Long userId;
+    private final String email; // email = username
+    private final String password;
+    private final Collection<? extends GrantedAuthority> authorities;
 
 
     @Override
@@ -25,16 +25,12 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return password;
     }
 
     @Override
     public String getUsername() {
-        return user.getEmail();
-    }
-
-    public Long getUserId(){
-        return user.getUserId();
+        return email;
     }
 
     @Override

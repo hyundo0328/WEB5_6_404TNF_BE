@@ -8,12 +8,12 @@ import com.grepp.teamnotfound.app.controller.api.mypage.payload.UserProfileArtic
 import com.grepp.teamnotfound.app.controller.api.mypage.payload.UserProfileArticleResponse;
 import com.grepp.teamnotfound.app.controller.api.mypage.payload.VaccineWriteRequest;
 import com.grepp.teamnotfound.app.controller.api.profile.payload.ProfilePetResponse;
-import com.grepp.teamnotfound.app.model.auth.domain.Principal;
 import com.grepp.teamnotfound.app.model.board.ArticleService;
 import com.grepp.teamnotfound.app.model.board.code.ProfileBoardType;
 import com.grepp.teamnotfound.app.model.pet.PetService;
 import com.grepp.teamnotfound.app.model.pet.dto.PetDto;
 import com.grepp.teamnotfound.app.model.user.UserService;
+import com.grepp.teamnotfound.app.model.user.entity.UserDetailsImpl;
 import com.grepp.teamnotfound.app.model.vaccination.VaccinationService;
 import com.grepp.teamnotfound.app.model.vaccination.dto.VaccinationDto;
 import jakarta.validation.Valid;
@@ -55,7 +55,7 @@ public class MypageApiController {
     @GetMapping("/v1/me")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getUser(
-        @AuthenticationPrincipal Principal principal
+        @AuthenticationPrincipal UserDetailsImpl principal
     ) {
         Long userId = principal.getUserId();
 
@@ -65,7 +65,7 @@ public class MypageApiController {
     @GetMapping("/v1/pets")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<?>> getUserPets(
-        @AuthenticationPrincipal Principal principal
+        @AuthenticationPrincipal UserDetailsImpl principal
     ) {
         Long userId = principal.getUserId();
 
@@ -76,7 +76,7 @@ public class MypageApiController {
     @GetMapping("/v1/board/{type}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getUserBoard(
-        @AuthenticationPrincipal Principal principal,
+        @AuthenticationPrincipal UserDetailsImpl principal,
         @PathVariable(name = "type") ProfileBoardType type,
         @ModelAttribute @Valid UserProfileArticleRequest request
     ) {
@@ -94,7 +94,7 @@ public class MypageApiController {
     public ResponseEntity<?> createPet(
         @RequestPart("request") PetWriteRequest request,
         @RequestPart(value = "image", required = false) MultipartFile image,
-        @AuthenticationPrincipal Principal principal
+        @AuthenticationPrincipal UserDetailsImpl principal
     ) {
         Long userId = principal.getUserId();
         List<MultipartFile> images = (image != null) ? List.of(image) : List.of();
@@ -169,7 +169,7 @@ public class MypageApiController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> createVaccineSchedule(
             @PathVariable(name = "petId") Long petId,
-            @AuthenticationPrincipal Principal principal
+            @AuthenticationPrincipal UserDetailsImpl principal
     ){
         vaccinationService.createVaccinationSchedule(petId, principal.getUserId());
         return ResponseEntity.ok(HttpStatus.CREATED);
@@ -183,7 +183,7 @@ public class MypageApiController {
     public ResponseEntity<?> updateUser(
         @Valid @RequestPart("request") UserWriteRequest request,
         @RequestPart(value = "image", required = false) MultipartFile image,
-        @AuthenticationPrincipal Principal principal
+        @AuthenticationPrincipal UserDetailsImpl principal
     ) {
         Long userId = principal.getUserId();
         List<MultipartFile> images = (image != null) ? List.of(image) : List.of();
@@ -195,7 +195,7 @@ public class MypageApiController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> matchUserPassword(
         @RequestBody PasswordRequestDto request,
-        @AuthenticationPrincipal Principal principal
+        @AuthenticationPrincipal UserDetailsImpl principal
     ) {
         Long userId = principal.getUserId();
         return ResponseEntity.ok(userService.matchPassword(userId, request));
@@ -204,7 +204,7 @@ public class MypageApiController {
     @DeleteMapping("/v1/me")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> deleteUser(
-        @AuthenticationPrincipal Principal principal
+        @AuthenticationPrincipal UserDetailsImpl principal
     ) {
         Long userId = principal.getUserId();
         userService.deleteUser(userId);

@@ -1,9 +1,9 @@
 package com.grepp.teamnotfound.app.controller.api.report;
 
 import com.grepp.teamnotfound.app.controller.api.report.payload.ReportRequest;
-import com.grepp.teamnotfound.app.model.auth.domain.Principal;
 import com.grepp.teamnotfound.app.model.report.ReportService;
 import com.grepp.teamnotfound.app.model.report.dto.ReportCommand;
+import com.grepp.teamnotfound.app.model.user.entity.UserDetailsImpl;
 import com.grepp.teamnotfound.infra.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +24,8 @@ public class ReportApiController {
     @PostMapping("/v1")
     @Operation(summary = "커뮤니티 게시글/댓글 신고")
     public ResponseEntity<?> createReport(@RequestBody ReportRequest request,
-                                          @AuthenticationPrincipal Principal principal) {
-        ReportCommand command = ReportCommand.of(principal, request);
+                                          @AuthenticationPrincipal UserDetailsImpl principal) {
+        ReportCommand command = ReportCommand.of(principal.getUserId(), request);
         Long createId = reportService.createReport(command);
         return ResponseEntity.ok(ApiResponse.success(createId));
     }
