@@ -2,7 +2,7 @@ package com.grepp.teamnotfound.app.model.user.entity;
 
 import com.grepp.teamnotfound.app.model.auth.code.Role;
 import com.grepp.teamnotfound.app.model.user.code.SuspensionPeriod;
-import com.grepp.teamnotfound.app.model.user.code.UserStateResponse;
+import com.grepp.teamnotfound.app.model.user.code.UserStatus;
 import com.grepp.teamnotfound.infra.entity.BaseEntity;
 import com.grepp.teamnotfound.infra.error.exception.BusinessException;
 import com.grepp.teamnotfound.infra.error.exception.code.ReportErrorCode;
@@ -17,7 +17,7 @@ import java.time.OffsetDateTime;
 @Entity
 @Table(name = "Users")
 @Getter
-//@Setter
+@EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
@@ -68,31 +68,27 @@ public class User extends BaseEntity {
     @Column
     private OffsetDateTime lastLoginAt;
 
+    @Column(nullable = false, length = 30)
+    @Enumerated(EnumType.STRING)
+    private UserStatus status;
+
 
     public void suspend(SuspensionPeriod period) {
         if (period.isPermanent()) {
             this.suspensionEndAt = OffsetDateTime.now().plusYears(7777);
-            super.updatedAt = OffsetDateTime.now();
+            this.status = UserStatus.SUSPENDED;
             return;
         }
         OffsetDateTime now = OffsetDateTime.now();
-        if (this.suspensionEndAt == null || this.suspensionEndAt.isBefore(now)) {
+
+        if (this.status == UserStatus.ACTIVE) {
             this.suspensionEndAt = now.plusDays(period.getDays());
-            super.updatedAt = OffsetDateTime.now();
+            this.status = UserStatus.SUSPENDED;
         } else {
             this.suspensionEndAt = this.suspensionEndAt.plusDays(period.getDays());
-            super.updatedAt = OffsetDateTime.now();
         }
+        super.updatedAt = OffsetDateTime.now();
     }
-
-    public UserStateResponse getUserState() {
-        if (this.deletedAt != null) {
-            return UserStateResponse.LEAVE;
-        } else if(this.suspensionEndAt == null || this.suspensionEndAt.isBefore(OffsetDateTime.now())){
-            return UserStateResponse.ACTIVE;
-        } else
-            return UserStateResponse.SUSPENDED;
-        }
 
     public void validateNotSelf(User reported) {
         if(this.equals(reported)){
@@ -108,6 +104,11 @@ public class User extends BaseEntity {
         return this.deletedAt != null;
     }
 
+    public void deleteUser(){
+        this.status = UserStatus.LEAVE;
+        this.deletedAt = OffsetDateTime.now();
+    }
+
     public void updateSuspensionEndAtNow() {
         OffsetDateTime now = OffsetDateTime.now();
 
@@ -117,5 +118,13 @@ public class User extends BaseEntity {
 
         this.suspensionEndAt = now;
         this.updatedAt = suspensionEndAt;
+    }
+
+    public void refreshStatus(){
+        if(this.status == UserStatus.SUSPENDED
+            && this.suspensionEndAt != null
+            && OffsetDateTime.now().isAfter(this.suspensionEndAt)){
+            this.status = UserStatus.ACTIVE;
+        }
     }
 }
