@@ -15,12 +15,21 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.Setter;
 
 
 @Entity
-@Table(name = "Recommends")
+@Table(
+    name = "Recommends",
+    uniqueConstraints = {
+        @UniqueConstraint(
+            name = "uq_recommend_criteria",
+            columnNames = {"age", "breed", "size", "weightState", "walkingState", "sleepingState"}
+        )
+    }
+)
 @Getter
 @Setter
 public class Recommend extends BaseEntity {
