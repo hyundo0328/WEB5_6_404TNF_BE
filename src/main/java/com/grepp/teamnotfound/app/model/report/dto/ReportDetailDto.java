@@ -5,7 +5,7 @@ import com.grepp.teamnotfound.app.model.report.code.ReportCategory;
 import com.grepp.teamnotfound.app.model.report.code.ReportState;
 import com.grepp.teamnotfound.app.model.report.code.ReportType;
 import com.grepp.teamnotfound.app.model.report.entity.Report;
-import com.grepp.teamnotfound.app.model.user.code.UserStateResponse;
+import com.grepp.teamnotfound.app.model.user.code.UserStatus;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -26,7 +26,7 @@ public class ReportDetailDto {
     private String reporterNickname;
     private String reportedNickname;
     private String adminReason;
-    private UserStateResponse reportedState;
+    private UserStatus reportedState;
     private OffsetDateTime createdAt;
     private OffsetDateTime reportedAt;          // 신고 처리일
     private OffsetDateTime suspensionEndAt;     // 회원 상태 정지 종료일
@@ -45,7 +45,7 @@ public class ReportDetailDto {
                 .reporterNickname(report.getReporter().getNickname())
                 .reportedNickname(report.getReported().getNickname())
                 .adminReason(report.getAdminReason())
-                .reportedState(report.getReported().getUserState())
+                .reportedState(report.getReported().getStatus())
                 .createdAt(report.getCreatedAt())
                 .reportedAt(report.getReportedAt())
                 .suspensionEndAt(report.getReported().getSuspensionEndAt())

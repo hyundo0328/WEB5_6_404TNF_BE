@@ -4,8 +4,8 @@ import com.grepp.teamnotfound.app.controller.api.reply.payload.ReplyDetailRespon
 import com.grepp.teamnotfound.app.controller.api.reply.payload.ReplyListRequest;
 import com.grepp.teamnotfound.app.controller.api.reply.payload.ReplyListResponse;
 import com.grepp.teamnotfound.app.controller.api.reply.payload.ReplyRequest;
-import com.grepp.teamnotfound.app.model.auth.domain.Principal;
 import com.grepp.teamnotfound.app.model.reply.ReplyService;
+import com.grepp.teamnotfound.app.model.user.entity.UserDetailsImpl;
 import com.grepp.teamnotfound.infra.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -48,7 +48,7 @@ public class ReplyApiController {
     public ResponseEntity<?> createReply(
         @PathVariable Long articleId,
         @ModelAttribute ReplyRequest request,
-        @AuthenticationPrincipal Principal principal
+        @AuthenticationPrincipal UserDetailsImpl principal
     ) {
         ReplyDetailResponse response = replyService.createReply(request, articleId, principal.getUserId());
         return ResponseEntity.ok(ApiResponse.success(response));
@@ -61,7 +61,7 @@ public class ReplyApiController {
         @PathVariable Long articleId,
         @PathVariable Long replyId,
         @ModelAttribute ReplyRequest request,
-        @AuthenticationPrincipal Principal principal
+        @AuthenticationPrincipal UserDetailsImpl principal
     ) {
         ReplyDetailResponse response = replyService.updateReply(request, articleId, replyId, principal.getUserId());
         return ResponseEntity.ok(ApiResponse.success(response));
@@ -73,7 +73,7 @@ public class ReplyApiController {
     public ResponseEntity<?> deleteReply(
         @PathVariable Long articleId,
         @PathVariable Long replyId,
-        @AuthenticationPrincipal Principal principal
+        @AuthenticationPrincipal UserDetailsImpl principal
     ) {
         replyService.deleteReply(articleId, replyId, principal.getUserId());
         return ResponseEntity.ok(ApiResponse.success(Map.of("result", "댓글이 정상적으로 삭제되었습니다.")));

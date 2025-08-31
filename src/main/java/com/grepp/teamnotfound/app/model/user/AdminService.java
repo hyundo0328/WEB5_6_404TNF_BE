@@ -154,16 +154,9 @@ public class AdminService {
     }
 
     @Transactional
-    public void rejectReport(RejectReportDto dto) {
+    public List<Report> rejectReport(RejectReportDto dto) {
         Report targetReport = reportRepository.findByReportIdWithUsers(dto.getReportId())
                 .orElseThrow(() -> new BusinessException(ReportErrorCode.REPORT_NOT_FOUND));
-
-        targetReport.reject(dto.getAdminReason());
-
-        NotiServiceCreateDto notiDto1 = NotiServiceCreateDto.builder()
-            .targetId(targetReport.getReportId())
-            .build();
-        notiAppender.append(targetReport.getReporter().getUserId(), NotiType.REPORT_FAIL, notiDto1);
 
         List<Report> reports = reportRepository.findByContentIdAndReportCategoryAndReportTypeState(
                 targetReport.getContentId(),
@@ -173,7 +166,12 @@ public class AdminService {
         );
         for (Report report : reports) {
             report.reject(dto.getAdminReason());
+        }
+        return reports;
+    }
 
+    public void notiReject(List<Report> reports){
+        for (Report report : reports) {
             NotiServiceCreateDto notiDtos = NotiServiceCreateDto.builder()
                 .targetId(report.getReportId())
                 .build();
@@ -182,18 +180,11 @@ public class AdminService {
     }
 
     @Transactional
-    public void acceptReportAndSuspendUser(AcceptReportDto dto) {
+    public List<Report> acceptReportAndSuspendUser(AcceptReportDto dto) {
         Report targetReport = reportRepository.findByReportIdWithUsers(dto.getReportId())
                 .orElseThrow(() -> new BusinessException(ReportErrorCode.REPORT_NOT_FOUND));
 
-        insertReportedAtOfContent(targetReport);
-        targetReport.accept(dto.getAdminReason());
-
-        NotiServiceCreateDto notiDto1 = NotiServiceCreateDto.builder()
-            .targetId(targetReport.getReportId())
-            .build();
-        notiAppender.append(targetReport.getReporter().getUserId(), NotiType.REPORT_SUCCESS, notiDto1);
-        notiAppender.append(targetReport.getReported().getUserId(), NotiType.REPORTED, notiDto1);
+        hideContentBy(targetReport);
 
         List<Report> reports = reportRepository.findByContentIdAndReportCategoryAndReportTypeState(
                 targetReport.getContentId(),
@@ -203,19 +194,25 @@ public class AdminService {
         );
         for (Report report : reports) {
             report.accept(dto.getAdminReason());
-
-            NotiServiceCreateDto notiDtos = NotiServiceCreateDto.builder()
-                .targetId(report.getReportId())
-                .build();
-            notiAppender.append(report.getReporter().getUserId(), NotiType.REPORT_SUCCESS, notiDtos);
-            notiAppender.append(report.getReported().getUserId(), NotiType.REPORTED, notiDtos);
         }
 
         User user = targetReport.getReported();
         user.suspend(dto.getPeriod());
+
+        return reports;
     }
 
-    private void insertReportedAtOfContent(Report targetReport) {
+    public void notiAccept(List<Report> reports) {
+        for(Report report : reports) {
+            NotiServiceCreateDto notiDtos = NotiServiceCreateDto.builder()
+                    .targetId(report.getReportId())
+                    .build();
+            notiAppender.append(report.getReporter().getUserId(), NotiType.REPORT_SUCCESS, notiDtos);
+            notiAppender.append(report.getReported().getUserId(), NotiType.REPORTED, notiDtos);
+        }
+    }
+
+    private void hideContentBy(Report targetReport) {
         if(targetReport.getType() == ReportType.BOARD){
             Article article = articleRepository.findByArticleId(targetReport.getContentId())
                     .orElseThrow(() -> new BusinessException(BoardErrorCode.ARTICLE_NOT_FOUND));
@@ -228,11 +225,14 @@ public class AdminService {
         } else throw new BusinessException(ReportErrorCode.REPORT_TYPE_BAD_REQUEST);
     }
 
-    public Page<UsersListDto> getUsersList(UsersListRequest request) {
+    @Transactional
+    public Page<UsersListDto> refreshUsersStatusAndGetUsersList(UsersListRequest request) {
+        userRepository.refreshSuspendedUsers();
         Pageable pageable = PageRequest.of(request.getPage() -1, request.getSize());
         return userRepository.findUserListWithMeta(request, pageable);
     }
 
+    @Transactional(readOnly = true)
     public Page<ReportsListDto> getReportsList(ReportsListRequest request) {
         Pageable pageable = PageRequest.of(request.getPage() -1, request.getSize());
         return reportRepository.findReportListWithMeta(request, pageable);

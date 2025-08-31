@@ -1,11 +1,12 @@
 package com.grepp.teamnotfound.app.controller.api.notification;
 
-import com.grepp.teamnotfound.app.model.auth.domain.Principal;
 import com.grepp.teamnotfound.app.model.notification.NotificationService;
 import com.grepp.teamnotfound.app.model.notification.code.NotiTarget;
 import com.grepp.teamnotfound.app.model.notification.code.NotiType;
 import com.grepp.teamnotfound.app.model.notification.repository.EmitterRepository;
 import java.io.IOException;
+
+import com.grepp.teamnotfound.app.model.user.entity.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -35,14 +36,14 @@ public class NotificationApiController {
     private final EmitterRepository emitterRepository;
 
     @GetMapping("/v1/notifications")
-    public ResponseEntity<?> getUserNoti(@AuthenticationPrincipal Principal principal) {
+    public ResponseEntity<?> getUserNoti(@AuthenticationPrincipal UserDetailsImpl principal) {
         Long userId = principal.getUserId();
 
         return ResponseEntity.ok(notificationService.getUserNoti(userId));
     }
 
     @GetMapping(value = "/v1/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter subscribe(@AuthenticationPrincipal Principal principal) {
+    public SseEmitter subscribe(@AuthenticationPrincipal UserDetailsImpl principal) {
         Long userId = principal.getUserId();
 
         SseEmitter emitter = new SseEmitter(60 * 1000L * 5); // 5분 타임아웃
@@ -73,7 +74,7 @@ public class NotificationApiController {
     @GetMapping("/v1/setting")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getUserNotificationSetting(
-        @AuthenticationPrincipal Principal principal
+        @AuthenticationPrincipal UserDetailsImpl principal
     ) {
         Long userId = principal.getUserId();
 
@@ -84,7 +85,7 @@ public class NotificationApiController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> changeNotificationSetting(
         @RequestParam("target") NotiTarget target,
-        @AuthenticationPrincipal Principal principal
+        @AuthenticationPrincipal UserDetailsImpl principal
     ) {
         Long userId = principal.getUserId();
 
@@ -118,7 +119,7 @@ public class NotificationApiController {
     @DeleteMapping("/v1")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> deleteAllNotification(
-        @AuthenticationPrincipal Principal principal
+        @AuthenticationPrincipal UserDetailsImpl principal
     ) {
         Long userId = principal.getUserId();
 

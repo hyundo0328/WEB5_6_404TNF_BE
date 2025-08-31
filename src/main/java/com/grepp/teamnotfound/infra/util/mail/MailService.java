@@ -1,20 +1,23 @@
 package com.grepp.teamnotfound.infra.util.mail;
 
 import com.grepp.teamnotfound.infra.error.exception.AuthException;
-import com.grepp.teamnotfound.infra.error.exception.CommonException;
 import com.grepp.teamnotfound.infra.error.exception.code.UserErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.mail.MailException;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MailService {
 
     private final JavaMailSender mailSender;
@@ -27,6 +30,7 @@ public class MailService {
     private long expirationSeconds;
 
 
+    @Async("mailExecutor")
     public void sendVerificationEmail(String toEmail){
         String verifyCode = VerifyCodeGenerator.generateCode();
         String subject = "[🐶멍멍일지] 회원가입 인증 코드입니다.";
@@ -46,10 +50,9 @@ public class MailService {
             message.setText(text);
             mailSender.send(message);
 
-        } catch (MailException e) {
+        } catch (MailSendException e) {
+            log.error("Failed to send verification email to {}. Reason: {}", toEmail, e.getMessage(), e);
             stringRedisTemplate.delete("email: verifying " + toEmail);
-            // MailException은 복구 안 되는 오류니, 그냥 Runtime으로 둠
-            throw new CommonException(UserErrorCode.EMAIL_VERIFICATION_SEND_FAILED);
         }
     }
 
@@ -58,7 +61,6 @@ public class MailService {
         String redisKey = "email: verifying " + email;
         String storedCode = stringRedisTemplate.opsForValue().get(redisKey);
         if (storedCode == null || !storedCode.equals(code)) {
-            // 유저의 입력 오류에 따른 예외니, 그냥 Runtime으로 둠
             throw new AuthException(UserErrorCode.EMAIL_VERIFICATION_FAILED);
         }
         stringRedisTemplate.delete(redisKey);

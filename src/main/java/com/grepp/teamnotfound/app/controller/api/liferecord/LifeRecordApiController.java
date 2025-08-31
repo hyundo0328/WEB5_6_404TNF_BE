@@ -4,12 +4,12 @@ import com.grepp.teamnotfound.app.controller.api.liferecord.payload.LifeRecordLi
 import com.grepp.teamnotfound.app.controller.api.liferecord.payload.LifeRecordListResponse;
 import com.grepp.teamnotfound.app.controller.api.liferecord.payload.LifeRecordData;
 import com.grepp.teamnotfound.app.controller.api.liferecord.payload.PageInfo;
-import com.grepp.teamnotfound.app.model.auth.domain.Principal;
 import com.grepp.teamnotfound.app.model.liferecord.LifeRecordService;
 import com.grepp.teamnotfound.app.model.liferecord.dto.LifeRecordDto;
 import com.grepp.teamnotfound.app.model.liferecord.dto.LifeRecordListDto;
 import com.grepp.teamnotfound.app.model.pet.PetService;
 import com.grepp.teamnotfound.app.model.structured_data.code.FeedUnit;
+import com.grepp.teamnotfound.app.model.user.entity.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
@@ -45,7 +45,7 @@ public class LifeRecordApiController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/v1/users/life-record-list")
     public ResponseEntity<LifeRecordListResponse> getLifeRecordList(
-            @AuthenticationPrincipal Principal principal,
+            @AuthenticationPrincipal UserDetailsImpl principal,
             @ModelAttribute @Valid LifeRecordListRequest request
     ){
         PageRequest pageable = PageRequest.of(request.getPage() - 1, 12); // size 12 고정
@@ -61,7 +61,7 @@ public class LifeRecordApiController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/v1/users/pet-list")
     public ResponseEntity<Map<String, List<Map<Long, String>>>> getPetList(
-            @AuthenticationPrincipal Principal principal
+            @AuthenticationPrincipal UserDetailsImpl principal
     ){
         List<Map<Long, String>> petLists = petService.findPetListByUserId(principal.getUserId());
 
