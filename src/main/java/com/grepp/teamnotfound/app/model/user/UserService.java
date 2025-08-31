@@ -93,10 +93,6 @@ public class UserService {
         return user.getUserId();
     }
 
-    public void sendEmail(String email) {
-        mailService.sendVerificationEmail(email);
-    }
-
     @Transactional(readOnly = true)
     public void validateEmailDuplication(String email) {
         userRepository.findByEmail(email).ifPresent(user -> {
