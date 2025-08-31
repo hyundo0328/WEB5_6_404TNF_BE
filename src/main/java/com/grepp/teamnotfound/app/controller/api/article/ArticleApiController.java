@@ -5,8 +5,8 @@ import com.grepp.teamnotfound.app.controller.api.article.payload.ArticleListRequ
 import com.grepp.teamnotfound.app.controller.api.article.payload.ArticleListResponse;
 import com.grepp.teamnotfound.app.controller.api.article.payload.ArticleRequest;
 import com.grepp.teamnotfound.app.controller.api.article.payload.LikeResponse;
-import com.grepp.teamnotfound.app.model.auth.domain.Principal;
 import com.grepp.teamnotfound.app.model.board.ArticleService;
+import com.grepp.teamnotfound.app.model.user.entity.UserDetailsImpl;
 import com.grepp.teamnotfound.infra.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -51,7 +51,7 @@ public class ArticleApiController {
     public ResponseEntity<?> createArticle(
         @RequestPart("request") ArticleRequest request,
         @RequestPart(value = "images", required = false) List<MultipartFile> images,
-        @AuthenticationPrincipal Principal principal
+        @AuthenticationPrincipal UserDetailsImpl principal
     ) {
         Long articleId = articleService.writeArticle(request, images, principal.getUserId());
         return ResponseEntity.ok(ApiResponse.success(Map.of("articleId", articleId)));
@@ -62,7 +62,7 @@ public class ArticleApiController {
     @PreAuthorize("isAnonymous() or isAuthenticated()")
     public ResponseEntity<?> getArticle(
         @PathVariable Long articleId,
-        @AuthenticationPrincipal Principal principal
+        @AuthenticationPrincipal UserDetailsImpl principal
     ) {
         Long userId = null;
         if (principal != null) {
@@ -80,7 +80,7 @@ public class ArticleApiController {
         @PathVariable Long articleId,
         @RequestPart("request") ArticleRequest request,
         @RequestPart(value = "images", required = false) List<MultipartFile> images,
-        @AuthenticationPrincipal Principal principal
+        @AuthenticationPrincipal UserDetailsImpl principal
     ) {
         articleService.updateArticle(articleId, request, images, principal.getUserId());
         return ResponseEntity.ok(ApiResponse.success(Map.of("result", "게시글이 정상적으로 수정되었습니다.")));
@@ -91,7 +91,7 @@ public class ArticleApiController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> deleteArticle(
         @PathVariable Long articleId,
-        @AuthenticationPrincipal Principal principal
+        @AuthenticationPrincipal UserDetailsImpl principal
     ) {
         articleService.deleteArticle(articleId, principal.getUserId());
         return ResponseEntity.ok(ApiResponse.success(Map.of("msg", "게시글이 정상적으로 삭제되었습니다.")));
@@ -102,7 +102,7 @@ public class ArticleApiController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> likeArticle(
         @PathVariable Long articleId,
-        @AuthenticationPrincipal Principal principal
+        @AuthenticationPrincipal UserDetailsImpl principal
     ) {
         LikeResponse response = articleService.likeWithRedis(articleId, principal.getUserId());
         return ResponseEntity.ok(ApiResponse.success(response));
@@ -113,7 +113,7 @@ public class ArticleApiController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> undoLikeArticle(
         @PathVariable Long articleId,
-        @AuthenticationPrincipal Principal principal
+        @AuthenticationPrincipal UserDetailsImpl principal
     ) {
         LikeResponse response = articleService.unlikeWithRedis(articleId, principal.getUserId());
         return ResponseEntity.ok(ApiResponse.success(response));
@@ -133,7 +133,7 @@ public class ArticleApiController {
     @PreAuthorize("isAnonymous() or isAuthenticated()")
     public ResponseEntity<?> getLikeCount(
         @PathVariable Long articleId,
-        @AuthenticationPrincipal Principal principal
+        @AuthenticationPrincipal UserDetailsImpl principal
     ) {
         Long userId = null;
         if (principal != null) {

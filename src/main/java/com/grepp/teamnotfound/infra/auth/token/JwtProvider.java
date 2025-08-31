@@ -1,12 +1,11 @@
 package com.grepp.teamnotfound.infra.auth.token;
 
-import com.grepp.teamnotfound.app.model.auth.domain.Principal;
 import com.grepp.teamnotfound.app.model.auth.token.dto.AccessTokenDto;
 import com.grepp.teamnotfound.app.model.user.entity.User;
+import com.grepp.teamnotfound.app.model.user.entity.UserDetailsImpl;
 import com.grepp.teamnotfound.app.model.user.repository.UserRepository;
 import com.grepp.teamnotfound.infra.auth.token.code.TokenType;
 import com.grepp.teamnotfound.infra.error.exception.AuthException;
-import com.grepp.teamnotfound.infra.error.exception.BusinessException;
 import com.grepp.teamnotfound.infra.error.exception.code.UserErrorCode;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -56,7 +55,7 @@ public class JwtProvider {
 
     // 0. jwtAuthenticationFilter에서 authentication(인증객체)로 accessToken 제작하는 로직
     public AccessTokenDto generateAccessToken(Authentication authentication){
-        Principal principal = (Principal) authentication.getPrincipal();
+        UserDetailsImpl principal = (UserDetailsImpl) authentication.getPrincipal();
         return generateAccessToken(principal.getUserId());
     }
 
@@ -114,7 +113,7 @@ public class JwtProvider {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(user.getRole().name()));
 
-        Principal principal = new Principal(userId, user.getEmail(), "", authorities);
+        UserDetailsImpl principal = new UserDetailsImpl(userId, user.getEmail(), user.getPassword(), authorities);
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 

@@ -1,6 +1,5 @@
 package com.grepp.teamnotfound.app.model.auth;
 
-import com.grepp.teamnotfound.app.model.auth.domain.Principal;
 import com.grepp.teamnotfound.app.model.auth.dto.LoginCommand;
 import com.grepp.teamnotfound.app.model.auth.dto.LoginResult;
 import com.grepp.teamnotfound.app.model.auth.token.RefreshTokenService;
@@ -9,8 +8,8 @@ import com.grepp.teamnotfound.app.model.auth.token.dto.TokenDto;
 import com.grepp.teamnotfound.app.model.auth.token.entity.RefreshToken;
 import com.grepp.teamnotfound.app.model.auth.token.entity.TokenBlackList;
 import com.grepp.teamnotfound.app.model.auth.token.repository.TokenBlackListRepository;
-import com.grepp.teamnotfound.app.model.user.UserService;
 import com.grepp.teamnotfound.app.model.user.entity.User;
+import com.grepp.teamnotfound.app.model.user.entity.UserDetailsImpl;
 import com.grepp.teamnotfound.app.model.user.repository.UserRepository;
 import com.grepp.teamnotfound.infra.auth.token.JwtProvider;
 import com.grepp.teamnotfound.infra.error.exception.AuthException;
@@ -64,7 +63,7 @@ public class AuthService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        TokenDto tokenDto = processTokenLogin(((Principal) authentication.getPrincipal()).getUserId());
+        TokenDto tokenDto = processTokenLogin(((UserDetailsImpl) authentication.getPrincipal()).getUserId());
         user.updateLastLoginAt();
         return LoginResult.builder()
                 .userId(user.getUserId())
@@ -95,7 +94,7 @@ public class AuthService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        TokenDto tokenDto = processTokenLogin(((Principal) authentication.getPrincipal()).getUserId());
+        TokenDto tokenDto = processTokenLogin(((UserDetailsImpl) authentication.getPrincipal()).getUserId());
         user.updateLastLoginAt();
         return LoginResult.builder()
                 .userId(user.getUserId())

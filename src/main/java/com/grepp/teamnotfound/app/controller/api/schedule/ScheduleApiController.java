@@ -2,11 +2,11 @@ package com.grepp.teamnotfound.app.controller.api.schedule;
 
 import com.grepp.teamnotfound.app.controller.api.schedule.payload.ScheduleCreateRequest;
 import com.grepp.teamnotfound.app.controller.api.schedule.payload.ScheduleEditRequest;
-import com.grepp.teamnotfound.app.model.auth.domain.Principal;
 import com.grepp.teamnotfound.app.model.schedule.ScheduleService;
 import com.grepp.teamnotfound.app.model.schedule.dto.ScheduleCreateRequestDto;
 import com.grepp.teamnotfound.app.model.schedule.dto.ScheduleDto;
 import com.grepp.teamnotfound.app.model.schedule.dto.ScheduleEditRequestDto;
+import com.grepp.teamnotfound.app.model.user.entity.UserDetailsImpl;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -33,7 +33,7 @@ public class ScheduleApiController {
     @GetMapping("/calendar")
     public ResponseEntity<?> getPetCalendar(
             @RequestParam LocalDate date,
-            @AuthenticationPrincipal Principal principal
+            @AuthenticationPrincipal UserDetailsImpl principal
     ){
         List<ScheduleDto> schedules = scheduleService.getCalendar(principal.getUserId(), date);
 
@@ -43,7 +43,7 @@ public class ScheduleApiController {
     @PostMapping("/calendar")
     public ResponseEntity<?> createSchedule(
             @RequestBody ScheduleCreateRequest request,
-            @AuthenticationPrincipal Principal principal
+            @AuthenticationPrincipal UserDetailsImpl principal
     ){
         modelMapper.getConfiguration().setPropertyCondition(ctx -> !ctx.getMapping().getLastDestinationProperty().getName().equals("petId"));
         ScheduleCreateRequestDto requestDto = new ScheduleCreateRequestDto();
@@ -57,7 +57,7 @@ public class ScheduleApiController {
     @PatchMapping("/calendar")
     public ResponseEntity<?> EditSchedule(
             @RequestBody ScheduleEditRequest request,
-            @AuthenticationPrincipal Principal principal
+            @AuthenticationPrincipal UserDetailsImpl principal
     ){
         modelMapper.getConfiguration().setPropertyCondition(ctx -> !ctx.getMapping().getLastDestinationProperty().getName().equals("petId"));
         ScheduleEditRequestDto requestDto = new ScheduleEditRequestDto();
@@ -70,7 +70,7 @@ public class ScheduleApiController {
 
     @DeleteMapping("/calendar/delete")
     public ResponseEntity<?> DeleteSchedule(
-            @AuthenticationPrincipal Principal principal,
+            @AuthenticationPrincipal UserDetailsImpl principal,
             @RequestParam Long scheduleId,
             @RequestParam Boolean cycleLink
     ){
@@ -80,7 +80,7 @@ public class ScheduleApiController {
 
     @GetMapping("/calendar/{scheduleId}")
     public ResponseEntity<?> ScheduleIsDone(
-            @AuthenticationPrincipal Principal principal,
+            @AuthenticationPrincipal UserDetailsImpl principal,
             @PathVariable Long scheduleId
     ){
         scheduleService.checkIsDone(principal.getUserId(), scheduleId);
@@ -89,7 +89,7 @@ public class ScheduleApiController {
 
     @GetMapping("/vaccination/{petId}")
     public ResponseEntity<?> NextVaccination(
-            @AuthenticationPrincipal Principal principal,
+            @AuthenticationPrincipal UserDetailsImpl principal,
             @PathVariable Long petId
     ){
         List<ScheduleDto> schedules = scheduleService.getNextVaccination(principal.getUserId(), petId);
