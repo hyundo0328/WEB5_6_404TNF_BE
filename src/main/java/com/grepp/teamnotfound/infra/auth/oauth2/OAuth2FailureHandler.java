@@ -22,17 +22,19 @@ public class OAuth2FailureHandler extends SimpleUrlAuthenticationFailureHandler 
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
                                         AuthenticationException exception) throws IOException, ServletException {
 
-        log.error("3️⃣ 로그인 실패 : {}", exception.getMessage(), exception);
-
         String errorMessage;
         if (exception.getMessage().contains("다른 provider로 가입된 이메일")) {
+            log.info("Social login failed : email already registered with a different provider.");
             errorMessage = "이미 다른 소셜 계정으로 가입된 이메일입니다.";
         } else if (exception.getMessage().contains("지원하지 않는 OAuth2 provider")) {
+            log.info("Social login failed : unsupported provider.");
             errorMessage = "지원하지 않는 소셜 로그인입니다.";
         } else if(exception.getMessage().contains("멍멍일지")){
+            log.info("Social login failed : email already registered via Mungnote.");
             errorMessage = "멍멍일지로 가입된 이메일입니다. 멍멍일지 로그인을 시도해주세요.";
         }
         else {
+            log.error("Social login failed : {}", exception.getMessage(), exception);
             errorMessage = "소셜 로그인에 실패했습니다.";
         }
 
