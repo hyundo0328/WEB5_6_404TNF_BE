@@ -70,7 +70,7 @@ public class User extends BaseEntity {
 
     @Column(nullable = false, length = 30)
     @Enumerated(EnumType.STRING)
-    private UserStatus status;
+    private UserStatus status = UserStatus.ACTIVE;
 
 
     public void suspend(SuspensionPeriod period) {

@@ -84,7 +84,7 @@ public class JwtProvider {
             Jwts.parser().verifyWith(key).build().parse(token);
             return true;
         } catch (SecurityException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
-            log.error(e.getMessage(), e);
+            log.error("Invalid JWT token : {}", e.getMessage(), e);
             throw new JwtException("유효하지 않은 토큰입니다");
         }
     }
